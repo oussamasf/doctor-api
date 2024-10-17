@@ -65,7 +65,7 @@ export class administrativeAuthController {
    */
   @Version('1')
   @Roles(ADMINISTRATIVE_ROLES.SUPER_ADMIN)
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_BACKOFFICE), RoleGuard)
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_ADMINISTRATIVE), RoleGuard)
   @Post('/staff')
   @ApiBody({ schema: addStaff })
   create(@Body() createAdministrativeDto: CreateAdministrativeDto) {
@@ -79,7 +79,7 @@ export class administrativeAuthController {
    * @returns The profile information of the logged-in administrative admin.
    */
   @Version('1')
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_BACKOFFICE))
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_ADMINISTRATIVE))
   @Get('/profile')
   async getLoggedUser(@Req() req: Request) {
     return req.user;
@@ -91,7 +91,7 @@ export class administrativeAuthController {
    * @param req - The HTTP request object containing user information.
    */
   @Version('1')
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_BACKOFFICE))
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_ADMINISTRATIVE))
   @Get('/logout')
   async logout(@Req() req: any) {
     await this.administrativeService.logout(req.user.email);
@@ -104,7 +104,7 @@ export class administrativeAuthController {
    * @returns An object containing the new access token.
    */
   @Version('1')
-  @UseGuards(AuthGuard(AUTH_GUARD.REFRESH_TOKEN_BACKOFFICE))
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_ADMINISTRATIVE))
   @Get('/refresh')
   async refresh(@Req() req: any) {
     return await this.administrativeService.refresh(req.user);
