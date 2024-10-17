@@ -52,7 +52,7 @@ export class PatientAuthController {
    * @param req - The HTTP request object.
    * @returns A Promise that resolves to a Patient object representing the logged-in patient's profile.
    */
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_CLIENT))
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
   @Get('/profile')
   async getLoggedUser(@Req() req: any): Promise<Patient> {
     return req.user;
@@ -62,7 +62,7 @@ export class PatientAuthController {
    * Patient logout endpoint.
    * @param req - The HTTP request object.
    */
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_CLIENT))
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
   @Get('/logout')
   async logout(@Req() req: any) {
     await this.patientAuthService.logout(req.user.email);
@@ -73,7 +73,7 @@ export class PatientAuthController {
    * @param req - The HTTP request object.
    * @returns A Promise that resolves to updated authentication tokens.
    */
-  @UseGuards(AuthGuard(AUTH_GUARD.REFRESH_TOKEN_CLIENT))
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
   @Get('/refresh')
   async refresh(@Req() req: any) {
     return await this.patientAuthService.refresh(req.user);
