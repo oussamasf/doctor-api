@@ -1,8 +1,10 @@
+version: '3.5'
+
 services:
   #########################
   mongo:
-    container_name: doctor-db
-    image: mongo:8-noble
+    container_name: clinic-db
+    image: mongo:6
     restart: always
     hostname: ${MONGO_HOST_NAME}
     volumes:
@@ -14,10 +16,10 @@ services:
     ports:
       - ${MONGO_PORT}:27017
     networks:
-      - doctor-network
+      - clinic-network
   #########################
   app:
-    container_name: doctor-app
+    container_name: clinic-api
     build:
       context: .
       dockerfile: ./dockerfile
@@ -32,8 +34,8 @@ services:
     depends_on:
       - mongo
     networks:
-      - doctor-network
-#########################
+      - clinic-network
+
 networks:
-  doctor-network:
+  clinic-network:
     driver: bridge

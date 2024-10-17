@@ -1,17 +1,53 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { validateConfig } from 'config/env/env.config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+
+import { AdministrativeModule } from './administrative/administrative.module';
+import { RemovePasswordFieldInterceptor } from './interceptors/passwordRemover.interceptor';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { HttpLoggingMiddleware } from './middlewares/http-logging.middleware';
+import { CommonModule } from './common/common.module';
+import { CommonService } from './common/common.service';
+import { PatientModule } from './patient/patient.module';
+import { configOptions } from 'utils/config/env';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      validate: validateConfig,
-      isGlobal: true,
-    }),
+    ConfigModule.forRoot(configOptions),
+    AdministrativeModule,
+    PatientModule,
+
+    MongooseModule.forRoot(process.env.MONGO_URL),
+
+    //? rate limiter
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60,
+        limit: 10,
+      },
+    ]),
+
+    CommonModule,
+    EventEmitterModule.forRoot({ verboseMemoryLeak: true }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [
+    CommonService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RemovePasswordFieldInterceptor,
+    },
+  ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HttpLoggingMiddleware).forRoutes('*');
+  }
+}
