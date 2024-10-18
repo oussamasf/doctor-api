@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { DoctorAuthService } from '../doctor.auth.service';
+import { DoctorProfileService } from '../doctor.profile.service';
 import { Request } from 'express';
 import AUTH_GUARD from '../../../common/constants/authGuards';
 import * as bcrypt from 'bcrypt';
@@ -10,7 +10,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
   AUTH_GUARD.REFRESH_TOKEN_PATIENT,
 ) {
-  constructor(private readonly doctorAuthService: DoctorAuthService) {
+  constructor(private readonly doctorAuthService: DoctorProfileService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,

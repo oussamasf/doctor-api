@@ -11,7 +11,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBody, ApiResponse } from '@nestjs/swagger';
 
 // Service
-import { DoctorAuthService } from './doctor.auth.service';
+import { DoctorProfileService } from './doctor.profile.service';
 
 // Schemas
 import { Doctor } from './schemas/Doctor.schema';
@@ -27,12 +27,12 @@ import { LoginRes } from 'src/common/types';
 //? Controller class
 @Controller()
 @ApiTags('Doctor/account')
-export class DoctorAuthController {
+export class DoctorProfileController {
   /**
    * Constructor for DoctorAuthController
-   * @param doctorAuthService - The DoctorAuthService instance used for authentication and user management.
+   * @param doctorProfileService - The DoctorAccountService instance used for authentication and user management.
    */
-  constructor(private readonly doctorAuthService: DoctorAuthService) {}
+  constructor(private readonly doctorProfileService: DoctorProfileService) {}
 
   /**
    * Doctor login endpoint.
@@ -44,7 +44,7 @@ export class DoctorAuthController {
   @ApiBody({ schema: loginSchema })
   @ApiResponse({ status: 200, description: 'Login successful' })
   async login(@Body() loginDto: LoginDto): Promise<LoginRes<Doctor>> {
-    return await this.doctorAuthService.login(loginDto);
+    return await this.doctorProfileService.login(loginDto);
   }
 
   /**
@@ -65,7 +65,7 @@ export class DoctorAuthController {
   @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
   @Get('/logout')
   async logout(@Req() req: any) {
-    await this.doctorAuthService.logout(req.user.email);
+    await this.doctorProfileService.logout(req.user.email);
   }
 
   /**
@@ -76,6 +76,6 @@ export class DoctorAuthController {
   @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
   @Get('/refresh')
   async refresh(@Req() req: any) {
-    return await this.doctorAuthService.refresh(req.user);
+    return await this.doctorProfileService.refresh(req.user);
   }
 }

@@ -5,13 +5,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 
 // Controller
-import { DoctorAuthController } from './doctor.auth.controller';
+import { DoctorProfileController } from './doctor.profile.controller';
 
 // Services
-import { DoctorAuthService } from './doctor.auth.service';
+import { DoctorProfileService } from './doctor.profile.service';
 
 //
-import { DoctorAuthRepository } from './repository/doctor.auth.repository';
+import { DoctorProfileRepository } from './repository/doctor.profile.repository';
 
 // Schema
 import { Doctor, DoctorSchema } from './schemas/Doctor.schema';
@@ -24,12 +24,13 @@ import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
     MongooseModule.forFeature([{ name: Doctor.name, schema: DoctorSchema }]),
     JwtModule.register({}),
   ],
-  controllers: [DoctorAuthController],
+  controllers: [DoctorProfileController],
   providers: [
-    DoctorAuthService,
-    DoctorAuthRepository,
+    DoctorProfileService,
+    DoctorProfileRepository,
     AccessTokenStrategy,
     RefreshTokenStrategy,
   ],
+  exports: [DoctorProfileService],
 })
-export class DoctorAuthModule {}
+export class DoctorProfileModule {}
