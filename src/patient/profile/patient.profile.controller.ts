@@ -11,7 +11,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBody, ApiResponse } from '@nestjs/swagger';
 
 // Service
-import { PatientAuthService } from './patient.auth.service';
+import { PatientProfileService } from './patient.profile.service';
 
 // Schemas
 import { Patient } from './schemas/patient.schema';
@@ -32,7 +32,7 @@ export class PatientAuthController {
    * Constructor for PatientAuthController
    * @param patientAuthService - The PatientAuthService instance used for authentication and user management.
    */
-  constructor(private readonly patientAuthService: PatientAuthService) {}
+  constructor(private readonly patientProfileService: PatientProfileService) {}
 
   /**
    * Patient login endpoint.
@@ -44,7 +44,7 @@ export class PatientAuthController {
   @ApiBody({ schema: loginSchema })
   @ApiResponse({ status: 200, description: 'Login successful' })
   async login(@Body() loginDto: LoginDto): Promise<LoginRes<Patient>> {
-    return await this.patientAuthService.login(loginDto);
+    return await this.patientProfileService.login(loginDto);
   }
 
   /**
@@ -67,7 +67,7 @@ export class PatientAuthController {
   @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
   @Get('/logout')
   async logout(@Req() req: any) {
-    await this.patientAuthService.logout(req.user.email);
+    await this.patientProfileService.logout(req.user.email);
   }
 
   /**
@@ -79,6 +79,6 @@ export class PatientAuthController {
   @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
   @Get('/refresh')
   async refresh(@Req() req: any) {
-    return await this.patientAuthService.refresh(req.user);
+    return await this.patientProfileService.refresh(req.user);
   }
 }

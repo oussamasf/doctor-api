@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { PatientAuthService } from '../patient.auth.service';
+import { PatientProfileService } from '../patient.profile.service';
 import { Request } from 'express';
 import AUTH_GUARD from '../../../common/constants/authGuards';
 import * as bcrypt from 'bcrypt';
@@ -10,7 +10,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
   AUTH_GUARD.REFRESH_TOKEN_PATIENT,
 ) {
-  constructor(private readonly patientAuthService: PatientAuthService) {
+  constructor(private readonly patientProfileService: PatientProfileService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -27,7 +27,9 @@ export class RefreshTokenStrategy extends PassportStrategy(
 
     if (!refreshToken) throw new UnauthorizedException();
 
-    const user = await this.patientAuthService.getUserByName(payload.username);
+    const user = await this.patientProfileService.getUserByName(
+      payload.username,
+    );
     const isValid = await bcrypt.compare(refreshToken, `${user?.refreshToken}`);
     if (!isValid) throw new UnauthorizedException();
 
