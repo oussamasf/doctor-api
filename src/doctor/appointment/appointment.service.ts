@@ -12,6 +12,7 @@ import { FindAllReturn } from 'src/common/types';
 import { DoctorProfileRepository } from '../profile/repository/doctor.profile.repository';
 import { PatientProfileRepository } from 'src/patient/profile/repository/patient.profile.repository';
 import { addDays, getYYYYMMDD } from 'utils/time';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class AppointmentService {
@@ -38,10 +39,10 @@ export class AppointmentService {
    * @returns The appointment.
    * @throws NotFoundException if the appointment is not found.
    */
-  async getAppointmentById(id: string): Promise<Appointment> {
-    const item = await this.appointmentRepository.findOne({ id });
+  async getAppointmentById(_id: string): Promise<Appointment> {
+    const item = await this.appointmentRepository.findOne({ _id });
     if (!item) {
-      throw new NotFoundException(`Appointment with ID ${id} not found`);
+      throw new NotFoundException(`Appointment with ID ${_id} not found`);
     }
     return item;
   }
@@ -136,13 +137,25 @@ export class AppointmentService {
     return !!doctor;
   }
 
+  /**
+   * Checks if there is a conflicting appointment for a given patient or doctor at the specified date and time.
+   *
+   * @param {string} patientId - The ID of the patient to check for conflicts.
+   * @param {string} doctorId - The ID of the doctor to check for conflicts.
+   * @param {Date} date - The date of the appointment to check.
+   * @param {string} time - The time of the appointment to check.
+   * @returns {Promise<boolean>} A Promise that resolves to true if there is a conflicting appointment, false otherwise.
+   */
+  // TODO give a window of permeability of appointment time
   async isConflictingAppointment(
     patientId: string,
     doctorId: string,
     date: Date,
     time: string,
+    id?: string,
   ): Promise<boolean> {
     const patientConflicts = await this.appointmentRepository.find({
+      _id: { $ne: id || new Types.ObjectId() },
       patientId,
       date: {
         $gte: getYYYYMMDD(date).toString(),
@@ -151,6 +164,7 @@ export class AppointmentService {
       time,
     });
     const doctorConflicts = await this.appointmentRepository.find({
+      _id: { $ne: id || new Types.ObjectId() },
       doctorId,
       date: {
         $gte: getYYYYMMDD(date).toString(),

@@ -26,7 +26,7 @@ import {
   CreateAppointmentByDoctorDto,
   SearchQueryAppointmentDto,
   SortQueryAppointmentDto,
-  UpdateAppointmentDto,
+  UpdateAppointmentByDoctorDto,
 } from './dto';
 
 /**
@@ -157,14 +157,70 @@ export class AppointmentController {
     status: 404,
     description: 'Appointment not found',
   })
+  @Patch(':id')
   async updateAppointment(
-    @Param() { id }: IdParamsDto,
-    @Body() updateAppointmentDto: UpdateAppointmentDto,
+    @Param('id') id: string,
+    @Body() updateAppointmentDto: UpdateAppointmentByDoctorDto,
+    @Req() req: any,
   ) {
-    return await this.appointmentService.updateAppointment(
-      id,
-      updateAppointmentDto,
-    );
+    const { patientId, date, time } = updateAppointmentDto;
+    const doctorId = req.user.id;
+
+    //? Validate if patientId exists
+    if (patientId) {
+      const patientExists = await this.appointmentService.doesPatientExist(
+        `${patientId}`,
+      );
+      if (!patientExists) {
+        throw new BadRequestException(
+          `Patient with ID ${patientId} does not exist.`,
+        );
+      }
+    }
+
+    //? Validate if doctorId exists
+    if (doctorId) {
+      const doctorExists = await this.appointmentService.doesDoctorExist(
+        `${doctorId}`,
+      );
+      if (!doctorExists) {
+        throw new BadRequestException(
+          `Doctor with ID ${doctorId} does not exist.`,
+        );
+      }
+    }
+
+    if (date) {
+      const currentDateTime = new Date();
+
+      if (date < currentDateTime) {
+        throw new BadRequestException(
+          'Appointment date must be in the future.',
+        );
+      }
+    }
+
+    //? Check for conflicting appointments
+    if (date && (patientId || doctorId)) {
+      const isConflicting =
+        await this.appointmentService.isConflictingAppointment(
+          `${patientId}`,
+          `${doctorId}`,
+          date,
+          time,
+          id,
+        );
+      if (isConflicting) {
+        throw new BadRequestException(
+          'There is already an appointment scheduled for this time.',
+        );
+      }
+    }
+
+    return await this.appointmentService.updateAppointment(id, {
+      doctorId,
+      ...updateAppointmentDto,
+    });
   }
 
   /**
