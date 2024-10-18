@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { Doctor } from 'src/doctor/account/schemas/doctor.schema';
+import * as mongoose from 'mongoose';
 
 export type PatientDocument = HydratedDocument<Patient>;
 
@@ -15,6 +17,12 @@ export class Patient {
   username: string;
 
   @Prop()
+  password: string;
+
+  @Prop({ required: true, unique: true })
+  email: string;
+
+  @Prop()
   firstName: string;
 
   @Prop()
@@ -23,29 +31,23 @@ export class Patient {
   @Prop()
   phoneNumber: string;
 
-  @Prop()
-  password: string;
-
-  @Prop({ required: true, unique: true })
-  email: string;
-
   @Prop({ required: true })
   dateOfBirth: Date;
 
   @Prop()
   address: string;
 
-  @Prop({ type: [{ type: String }] })
-  doctors: string[]; // Array of doctor IDs
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId }] })
+  doctors: Doctor[];
 
   @Prop({ type: [{ type: String }] })
-  appointments: string[]; // Array of appointment IDs
+  appointments: string[];
 
   @Prop({ type: [{ type: String }] })
-  prescriptions: string[]; // Array of prescription IDs
+  prescriptions: string[];
 
   @Prop({ type: [{ type: String }] })
-  medicalHistory: string[]; // Array of medical history IDs
+  medicalHistory: string[];
 
   @Prop()
   refreshToken?: string;

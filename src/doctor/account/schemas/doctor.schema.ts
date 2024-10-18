@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import * as mongoose from 'mongoose';
+import { Patient } from 'src/patient/account/schemas/patient.schema';
 
 export type DoctorDocument = HydratedDocument<Doctor>;
 
@@ -30,22 +32,13 @@ export class Doctor {
   email: string;
 
   @Prop({ required: true })
-  dateOfBirth: Date;
+  specialization: string;
 
-  @Prop()
-  address: string;
-
-  @Prop({ type: [{ type: String }] })
-  doctors: string[]; // Array of doctor IDs
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId }] })
+  patients: Patient[];
 
   @Prop({ type: [{ type: String }] })
-  appointments: string[]; // Array of appointment IDs
-
-  @Prop({ type: [{ type: String }] })
-  prescriptions: string[]; // Array of prescription IDs
-
-  @Prop({ type: [{ type: String }] })
-  medicalHistory: string[]; // Array of medical history IDs
+  appointments: string[];
 
   @Prop()
   refreshToken?: string;
@@ -55,14 +48,14 @@ export const DoctorSchema = SchemaFactory.createForClass(Doctor);
 
 DoctorSchema.pre('save', async function (next) {
   const { CRYPTO_SALT_ROUNDS } = process.env;
-  const agent = this as Doctor;
+  const user = this as Doctor;
 
   try {
     const hashedPassword = await bcrypt.hash(
-      agent.password,
+      user.password,
       parseInt(`${CRYPTO_SALT_ROUNDS}`),
     );
-    agent.password = hashedPassword;
+    user.password = hashedPassword;
     next();
   } catch (error) {
     return next(error);
