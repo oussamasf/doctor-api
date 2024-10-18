@@ -1,13 +1,14 @@
-import { IsString, IsNotEmpty, IsDateString } from 'class-validator';
+import { OmitType } from '@nestjs/mapped-types';
+import { IsString, IsNotEmpty, IsDateString, IsMongoId } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class CreateAppointmentDto {
   @IsNotEmpty()
-  @IsString()
+  @IsMongoId()
   readonly patientId: Types.ObjectId;
 
   @IsNotEmpty()
-  @IsString()
+  @IsMongoId()
   readonly doctorId: Types.ObjectId;
 
   @IsNotEmpty()
@@ -22,3 +23,8 @@ export class CreateAppointmentDto {
   @IsString()
   readonly reason: string;
 }
+
+export class CreateAppointmentByDoctorDto extends OmitType(
+  CreateAppointmentDto,
+  ['doctorId'] as const,
+) {}

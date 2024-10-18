@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -7,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
   Version,
 } from '@nestjs/common';
@@ -21,7 +23,7 @@ import AUTH_GUARD from '../../common/constants/authGuards';
 import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AppointmentService } from './appointment.service';
 import {
-  CreateAppointmentDto,
+  CreateAppointmentByDoctorDto,
   SearchQueryAppointmentDto,
   SortQueryAppointmentDto,
   UpdateAppointmentDto,
@@ -40,6 +42,66 @@ export class AppointmentController {
    * @param appointmentService - The service responsible for managing appointments data.
    */
   constructor(private readonly appointmentService: AppointmentService) {}
+
+  /**
+   * Create a new appointment.
+   *
+   * @param createAppointmentDto - The data to create a new appointment.
+   * @returns The created appointment object.
+   */
+  @Version('1')
+  @Post()
+  @ApiResponse({
+    status: 200,
+    description: 'Appointment created successfully',
+  })
+  // @ApiBody({ schema: addStaff })
+  async createAppointment(
+    @Body() createAppointmentDto: CreateAppointmentByDoctorDto,
+    @Req() req: any,
+  ) {
+    const { patientId, date, time } = createAppointmentDto;
+    const doctorId = req.user.id;
+
+    //? Validate Patient and Doctor existence
+    const patientExists = await this.appointmentService.doesPatientExist(
+      `${patientId}`,
+    );
+
+    if (!patientExists) {
+      throw new BadRequestException(
+        `Patient with ID ${patientId} does not exist.`,
+      );
+    }
+
+    //? Validate that the appointment date is not in the past
+    const currentDateTime = new Date();
+
+    if (date < currentDateTime) {
+      throw new BadRequestException(
+        'Appointment date and time must be in the future.',
+      );
+    }
+
+    //? Check for conflicting appointments for the same doctor or patient
+    const isConflicting =
+      await this.appointmentService.isConflictingAppointment(
+        `${patientId}`,
+        `${doctorId}`,
+        date,
+        time,
+      );
+    if (isConflicting) {
+      throw new BadRequestException(
+        'There is already an appointment scheduled for this time.',
+      );
+    }
+
+    return await this.appointmentService.createAppointment({
+      doctorId,
+      ...createAppointmentDto,
+    });
+  }
 
   /**
    * Retrieve a list of appointments based on specified query parameters.
@@ -76,25 +138,6 @@ export class AppointmentController {
   @Get(':id')
   async findAppointment(@Param() { id }: IdParamsDto) {
     return await this.appointmentService.getAppointmentById(`${id}`);
-  }
-
-  /**
-   * Create a new appointment.
-   *
-   * @param createAppointmentDto - The data to create a new appointment.
-   * @returns The created appointment object.
-   */
-  @Version('1')
-  @Post()
-  @ApiResponse({
-    status: 200,
-    description: 'Appointment created successfully',
-  })
-  // @ApiBody({ schema: addStaff })
-  async createAppointment(@Body() createAppointmentDto: CreateAppointmentDto) {
-    return await this.appointmentService.createAppointment(
-      createAppointmentDto,
-    );
   }
 
   /**

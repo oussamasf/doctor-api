@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { JwtModule } from '@nestjs/jwt';
 
 // Controller
 import { AppointmentController } from './appointment.controller';
@@ -15,15 +13,17 @@ import { AppointmentRepository } from './repository/appointment.repository';
 
 // Schema
 import { Appointment, AppointmentSchema } from './schemas/appointment.schema';
+import { PatientProfileModule } from 'src/patient/profile/patient.profile.module';
+import { DoctorProfileModule } from '../profile/doctor.profile.module';
 
 @Module({
   imports: [
-    PassportModule,
     ConfigModule,
+    PatientProfileModule,
+    DoctorProfileModule,
     MongooseModule.forFeature([
       { name: Appointment.name, schema: AppointmentSchema },
     ]),
-    JwtModule.register({}),
   ],
   controllers: [AppointmentController],
   providers: [AppointmentService, AppointmentRepository],

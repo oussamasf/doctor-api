@@ -9,10 +9,17 @@ import {
 import { Appointment } from './schemas/appointment.schema';
 import { QueryParamsDto } from 'src/common/dto';
 import { FindAllReturn } from 'src/common/types';
+import { DoctorProfileRepository } from '../profile/repository/doctor.profile.repository';
+import { PatientProfileRepository } from 'src/patient/profile/repository/patient.profile.repository';
+import { addDays, getYYYYMMDD } from 'utils/time';
 
 @Injectable()
 export class AppointmentService {
-  constructor(private readonly appointmentRepository: AppointmentRepository) {}
+  constructor(
+    private readonly appointmentRepository: AppointmentRepository,
+    private readonly patientRepository: PatientProfileRepository,
+    private readonly doctorRepository: DoctorProfileRepository,
+  ) {}
 
   /**
    *  Creates an appointment.
@@ -105,5 +112,53 @@ export class AppointmentService {
     doctorId: string,
   ): Promise<Appointment[]> {
     return this.appointmentRepository.find({ doctorId });
+  }
+
+  /**
+   * Checks if a patient with the given ID exists.
+   *
+   * @param {string} patientId - The ID of the patient to check existence for.
+   * @returns {Promise<boolean>} A Promise that resolves to true if the patient exists, false otherwise.
+   */
+  async doesPatientExist(patientId: string): Promise<boolean> {
+    const patient = await this.patientRepository.exists(patientId);
+    return !!patient;
+  }
+
+  /**
+   * Checks if a doctor with the given ID exists.
+   *
+   * @param {string} doctorId - The ID of the doctor to check existence for.
+   * @returns {Promise<boolean>} A Promise that resolves to true if the doctor exists, false otherwise.
+   */
+  async doesDoctorExist(doctorId: string): Promise<boolean> {
+    const doctor = await this.doctorRepository.exists(doctorId);
+    return !!doctor;
+  }
+
+  async isConflictingAppointment(
+    patientId: string,
+    doctorId: string,
+    date: Date,
+    time: string,
+  ): Promise<boolean> {
+    const patientConflicts = await this.appointmentRepository.find({
+      patientId,
+      date: {
+        $gte: getYYYYMMDD(date).toString(),
+        $lt: addDays(date, 1).toString(),
+      },
+      time,
+    });
+    const doctorConflicts = await this.appointmentRepository.find({
+      doctorId,
+      date: {
+        $gte: getYYYYMMDD(date).toString(),
+        $lt: addDays(date, 1).toString(),
+      },
+      time,
+    });
+
+    return patientConflicts.length > 0 || doctorConflicts.length > 0;
   }
 }

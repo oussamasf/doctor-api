@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
-  AUTH_GUARD.REFRESH_TOKEN_PATIENT,
+  AUTH_GUARD.REFRESH_TOKEN_DOCTOR,
 ) {
   constructor(private readonly doctorAuthService: DoctorProfileService) {
     super({

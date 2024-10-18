@@ -52,7 +52,8 @@ export class DoctorProfileController {
    * @param req - The HTTP request object.
    * @returns A Promise that resolves to a Doctor object representing the logged-in doctor's profile.
    */
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
+  @Version('1')
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_DOCTOR))
   @Get('/profile')
   async getLoggedUser(@Req() req: any): Promise<Doctor> {
     return req.user;
@@ -62,7 +63,8 @@ export class DoctorProfileController {
    * Doctor logout endpoint.
    * @param req - The HTTP request object.
    */
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
+  @Version('1')
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_DOCTOR))
   @Get('/logout')
   async logout(@Req() req: any) {
     await this.doctorProfileService.logout(req.user.email);
@@ -73,7 +75,8 @@ export class DoctorProfileController {
    * @param req - The HTTP request object.
    * @returns A Promise that resolves to updated authentication tokens.
    */
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
+  @Version('1')
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_DOCTOR))
   @Get('/refresh')
   async refresh(@Req() req: any) {
     return await this.doctorProfileService.refresh(req.user);

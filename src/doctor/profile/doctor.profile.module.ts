@@ -31,6 +31,6 @@ import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
     AccessTokenStrategy,
     RefreshTokenStrategy,
   ],
-  exports: [DoctorProfileService],
+  exports: [DoctorProfileService, DoctorProfileRepository],
 })
 export class DoctorProfileModule {}

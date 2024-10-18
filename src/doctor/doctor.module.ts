@@ -10,7 +10,7 @@ import { AppointmentModule } from './appointment/appointment.module';
 
     RouterModule.register([
       {
-        path: 'doctor/profile',
+        path: 'doctor/account',
         module: DoctorProfileModule,
       },
       {

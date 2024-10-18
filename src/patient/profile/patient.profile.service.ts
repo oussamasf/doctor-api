@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 
 // DB actor
-import { PatientAuthRepository } from './repository/patient.profile.repository';
+import { PatientProfileRepository } from './repository/patient.profile.repository';
 
 // DTOS
 import { LoginDto } from './dto';
@@ -41,7 +41,7 @@ export class PatientProfileService {
    * @param {ConfigService} private readonly configService - The configuration service.
    */
   constructor(
-    private readonly patientProfileRepository: PatientAuthRepository,
+    private readonly patientProfileRepository: PatientProfileRepository,
     private readonly jwtService: JwtService,
     private readonly commonService: CommonService,
     private readonly configService: ConfigService,
