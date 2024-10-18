@@ -57,14 +57,14 @@ export const PatientSchema = SchemaFactory.createForClass(Patient);
 
 PatientSchema.pre('save', async function (next) {
   const { CRYPTO_SALT_ROUNDS } = process.env;
-  const agent = this as Patient;
+  const user = this as Patient;
 
   try {
     const hashedPassword = await bcrypt.hash(
-      agent.password,
+      user.password,
       parseInt(`${CRYPTO_SALT_ROUNDS}`),
     );
-    agent.password = hashedPassword;
+    user.password = hashedPassword;
     next();
   } catch (error) {
     return next(error);
