@@ -11,3 +11,7 @@ export const global = {
 export const doctorErrorMessages = {
   DOCTOR_NOT_FOUND: 'DOCTOR_NOT_FOUND',
 };
+
+export const patientErrorMessages = {
+  PATIENT_NOT_FOUND: 'PATIENT_NOT_FOUND',
+};

@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { PatientAuthService } from '../patient.auth.service';
+import { PatientProfileService } from '../patient.profile.service';
 // Constants
 import AUTH_GUARD from '../../../common/constants/authGuards';
 @Injectable()
@@ -9,7 +9,7 @@ export class AccessTokenStrategy extends PassportStrategy(
   Strategy,
   AUTH_GUARD.ACCESS_TOKEN_PATIENT,
 ) {
-  constructor(private readonly patientAuthService: PatientAuthService) {
+  constructor(private readonly patientAuthService: PatientProfileService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,

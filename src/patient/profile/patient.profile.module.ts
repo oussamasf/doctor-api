@@ -5,13 +5,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule } from '@nestjs/jwt';
 
 // Controller
-import { PatientAuthController } from './patient.auth.controller';
+import { PatientAuthController } from './patient.profile.controller';
 
 // Services
-import { PatientAuthService } from './patient.auth.service';
+import { PatientProfileService } from './patient.profile.service';
 
 //
-import { PatientAuthRepository } from './repository/patient.auth.repository';
+import { PatientAuthRepository } from './repository/patient.profile.repository';
 
 // Schema
 import { Patient, PatientSchema } from './schemas/patient.schema';
@@ -26,10 +26,11 @@ import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
   ],
   controllers: [PatientAuthController],
   providers: [
-    PatientAuthService,
+    PatientProfileService,
     PatientAuthRepository,
     AccessTokenStrategy,
     RefreshTokenStrategy,
   ],
+  exports: [PatientProfileService],
 })
-export class PatientAuthModule {}
+export class PatientProfileModule {}

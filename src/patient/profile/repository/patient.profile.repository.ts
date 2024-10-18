@@ -3,6 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, UpdateQuery } from 'mongoose';
 
 import { Patient, PatientDocument } from '../schemas/patient.schema';
+import { CreatePatientDto, UpdatePatientDto } from 'src/patient/dto';
+import { FindAllDto } from 'src/common/dto';
+import { FindAllReturn } from 'src/common/types';
 
 /**
  * Repository handling operations related to patient authentication.
@@ -27,8 +30,19 @@ export class PatientAuthRepository {
    * @param usersFilterQuery The filter query to search for patients.
    * @returns A promise that resolves to an array of patients.
    */
-  async find(usersFilterQuery: FilterQuery<Patient>): Promise<Patient[]> {
-    return this.patientModel.find(usersFilterQuery);
+  async find(usersFilterQuery: FindAllDto): Promise<FindAllReturn<Patient>> {
+    usersFilterQuery.sort ? usersFilterQuery.sort : { _id: 1 };
+    const [results, count] = await Promise.all([
+      this.patientModel
+        .find(usersFilterQuery.search)
+        .limit(usersFilterQuery.limit)
+        .skip(usersFilterQuery.skip)
+        .sort(usersFilterQuery.sort)
+        .select('-password'),
+
+      this.patientModel.countDocuments(usersFilterQuery.search),
+    ]);
+    return { results, count };
   }
 
   /**
@@ -69,5 +83,44 @@ export class PatientAuthRepository {
     return await this.patientModel.findOneAndUpdate({ email }, updateQuery, {
       new: true,
     });
+  }
+
+  /**
+   * Creates multiple doctors in the database.
+   * @param genres Array of objects containing doctor details to be created.
+   * @returns Promise resolving to an array of created doctors.
+   */
+  async createMultiple(doctors: CreatePatientDto[]): Promise<Patient[]> {
+    const newUsers = await this.patientModel.insertMany(doctors);
+    return newUsers;
+  }
+
+  /**
+   * Updates a doctor by its ID.
+   * @param _id The ID of the doctor to be updated.
+   * @param updateMovieDto Updated doctor details.
+   * @returns Promise resolving to the updated doctor.
+   */
+  async updateById(
+    _id: string,
+    updateDoctorDto: UpdatePatientDto,
+  ): Promise<Patient> {
+    const updatedItem = await this.patientModel.findOneAndUpdate(
+      { _id },
+      updateDoctorDto,
+      { new: true },
+    );
+
+    return updatedItem;
+  }
+
+  /**
+   * Deletes a doctor by its ID.
+   * @param _id The ID of the doctor to be deleted.
+   * @returns Promise resolving to the deleted doctor.
+   */
+  async deleteById(_id: string): Promise<Patient> {
+    const deletedItem = await this.patientModel.findOneAndDelete({ _id });
+    return deletedItem;
   }
 }

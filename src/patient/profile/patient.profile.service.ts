@@ -1,26 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 
 // DB actor
-import { PatientAuthRepository } from './repository/patient.auth.repository';
+import { PatientAuthRepository } from './repository/patient.profile.repository';
 
 // DTOS
-import { LoginDto } from './dto/';
+import { LoginDto } from './dto';
 
 // Constants
-import { global as globalErrorMessages } from '../../common/constants/errorMessages';
+import {
+  global as globalErrorMessages,
+  patientErrorMessages,
+} from '../../common/constants/errorMessages';
 import { CommonService } from '../../common/common.service';
 import { Patient } from './schemas/patient.schema';
-import { LoginRes } from '../../common/types';
+import { FindAllReturn, LoginRes } from '../../common/types';
+import { QueryParamsDto } from 'src/common/dto';
+import {
+  CreatePatientDto,
+  SearchQueryPatientDto,
+  SortQueryPatientDto,
+  UpdatePatientDto,
+} from 'src/patient/dto';
 
 /**
  * Injectable service class for managing patient authentication.
  * @class
  */
 @Injectable()
-export class PatientAuthService {
+export class PatientProfileService {
   /**
    * Constructor for the PatientAuthService class.
    *
@@ -31,7 +41,7 @@ export class PatientAuthService {
    * @param {ConfigService} private readonly configService - The configuration service.
    */
   constructor(
-    private readonly patientAuthRepository: PatientAuthRepository,
+    private readonly patientProfileRepository: PatientAuthRepository,
     private readonly jwtService: JwtService,
     private readonly commonService: CommonService,
     private readonly configService: ConfigService,
@@ -46,7 +56,7 @@ export class PatientAuthService {
   findOne(
     _id: string, //:  Promise<User>
   ) {
-    return this.patientAuthRepository.findOne({ _id });
+    return this.patientProfileRepository.findOne({ _id });
   }
 
   /**
@@ -56,7 +66,7 @@ export class PatientAuthService {
    * @returns {Promise<Patient>} A promise that resolves to the found patient.
    */
   async getUserByName(username: string) {
-    return await this.patientAuthRepository.findOne({ username });
+    return await this.patientProfileRepository.findOne({ username });
   }
 
   /**
@@ -100,7 +110,7 @@ export class PatientAuthService {
    * @returns {Promise<void>} A promise that resolves when the patient is logged out.
    */
   async logout(email: string) {
-    return await this.patientAuthRepository.findOneAndUpdate(
+    return await this.patientProfileRepository.findOneAndUpdate(
       { email },
       { $unset: { refreshToken: 1 } },
     );
@@ -164,7 +174,7 @@ export class PatientAuthService {
     email: string,
     refreshToken: string,
   ): Promise<Patient> {
-    return await this.patientAuthRepository.findOneAndUpdate(
+    return await this.patientProfileRepository.findOneAndUpdate(
       { email },
       {
         refreshToken: await bcrypt.hash(
@@ -173,5 +183,93 @@ export class PatientAuthService {
         ),
       },
     );
+  }
+
+  /**
+   * Retrieves a list of patient information entries based on specified query parameters.
+   *
+   * @param {QueryParamsDto} query - The query parameters for pagination (e.g., limit, skip).
+   * @param {SearchQueryMovieDto} search - The search criteria to filter agencies (optional).
+   * @param {SortQueryMovieDto} sort - The sorting criteria for the result (optional).
+   * @returns {Promise<FindAllReturn<Movie>>} A Promise that resolves to a paginated list of patient information entries.
+   */
+  async findAll(
+    query: QueryParamsDto,
+    search: SearchQueryPatientDto,
+    sort: SortQueryPatientDto,
+  ): Promise<FindAllReturn<Patient>> {
+    const { limit, skip } = query;
+
+    const findQuery = { limit, skip, search, sort };
+
+    return await this.patientProfileRepository.find(findQuery);
+  }
+
+  /**
+   * Creates a new patient information entry based on the provided DTO.
+   *
+   * @param {CreateMovieDto} createMovieDto - The DTO containing  information for creation.
+   * @throws {ConflictException} If an patient with the same name already exists.
+   * @returns {Promise<MovieInformation>} A Promise that resolves to the created patient information.
+   */
+  async create(createPatientDto: CreatePatientDto): Promise<Patient> {
+    return await this.patientProfileRepository.create(createPatientDto);
+  }
+
+  /**
+   * Creates multiple patients at once.
+   * @param createMovieDto Array of patient details to be created.
+   * @returns Promise that resolves to an array of created patients.
+   */
+  async createMultiple(
+    createPatientDto: CreatePatientDto[],
+  ): Promise<Patient[]> {
+    let results;
+    try {
+      results =
+        await this.patientProfileRepository.createMultiple(createPatientDto);
+    } catch (error) {
+      throw new ConflictException('already seeded');
+    }
+    return results;
+  }
+
+  /**
+   * Retrieves a single patient information entry by its unique id (_idNumber) and throws a "Not Found" exception if not found.
+   *
+   * @param {string} _id - The unique id of the patient information entry to find.
+   * @throws {NotFoundException} If no patient with the specified _idNumber is found.
+   * @returns {Promise<Movie>} A Promise that resolves to the found patient information entry.
+   */
+  async findOneWithException(_id: string): Promise<Patient | void> {
+    return await this.commonService.findWithNotFoundException(
+      () => this.findOne(_id),
+      patientErrorMessages.PATIENT_NOT_FOUND,
+    );
+  }
+
+  /**
+   * Updates an patient information entry with the specified changes based on its unique id (idNumber).
+   *
+   * @param {string} id - The unique id of the patient information entry to update.
+   * @param {UpdateMovieDto} updateMovieDto - The data containing the changes to apply to the patient information entry.
+   * @throws {DuplicatedMongoException} If the proposed changes result in a duplicate patient name.
+   * @returns {Promise<Movie>} A Promise that resolves when the patient information entry is successfully updated.
+   */
+  async update(id: string, updateMovieDto: UpdatePatientDto): Promise<Patient> {
+    return await this.commonService.duplicatedMongo(
+      () => this.patientProfileRepository.updateById(id, updateMovieDto),
+      '<PLACEHOLDER>',
+    );
+  }
+
+  /**
+   * Deletes a patient information entry based on its unique id (_idNumber).
+   *
+   * @param {string} _id - The unique id of the patient information entry to delete.
+   * @returns {Promise<void>} A Promise that resolves when the patient information entry is successfully deleted.
+   */
+  async delete(_id: string): Promise<Patient> {
+    return await this.patientProfileRepository.deleteById(_id);
   }
 }

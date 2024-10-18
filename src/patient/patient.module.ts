@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { PatientAuthModule } from './profile/patient.auth.module';
+import { PatientProfileModule } from './profile/patient.profile.module';
 import { RouterModule } from '@nestjs/core';
 
 @Module({
   imports: [
-    PatientAuthModule,
+    PatientProfileModule,
 
     RouterModule.register([
       {
         path: 'patient/account',
-        module: PatientAuthModule,
+        module: PatientProfileModule,
       },
     ]),
   ],
