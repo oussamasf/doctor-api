@@ -186,12 +186,12 @@ export class DoctorProfileService {
   }
 
   /**
-   * Retrieves a list of movie information entries based on specified query parameters.
+   * Retrieves a list of doctor information entries based on specified query parameters.
    *
    * @param {QueryParamsDto} query - The query parameters for pagination (e.g., limit, skip).
    * @param {SearchQueryMovieDto} search - The search criteria to filter agencies (optional).
    * @param {SortQueryMovieDto} sort - The sorting criteria for the result (optional).
-   * @returns {Promise<FindAllReturn<Movie>>} A Promise that resolves to a paginated list of movie information entries.
+   * @returns {Promise<FindAllReturn<Movie>>} A Promise that resolves to a paginated list of doctor information entries.
    */
   async findAll(
     query: QueryParamsDto,
@@ -206,20 +206,20 @@ export class DoctorProfileService {
   }
 
   /**
-   * Creates a new movie information entry based on the provided DTO.
+   * Creates a new doctor information entry based on the provided DTO.
    *
    * @param {CreateMovieDto} createMovieDto - The DTO containing  information for creation.
-   * @throws {ConflictException} If an movie with the same name already exists.
-   * @returns {Promise<MovieInformation>} A Promise that resolves to the created movie information.
+   * @throws {ConflictException} If an doctor with the same name already exists.
+   * @returns {Promise<MovieInformation>} A Promise that resolves to the created doctor information.
    */
   async create(createDoctorDto: CreateDoctorDto): Promise<Doctor> {
     return await this.doctorProfileRepository.create(createDoctorDto);
   }
 
   /**
-   * Creates multiple movies at once.
-   * @param createMovieDto Array of movie details to be created.
-   * @returns Promise that resolves to an array of created movies.
+   * Creates multiple doctors at once.
+   * @param createMovieDto Array of doctor details to be created.
+   * @returns Promise that resolves to an array of created doctors.
    */
   async createMultiple(createDoctorDto: CreateDoctorDto[]): Promise<Doctor[]> {
     let results;
@@ -233,11 +233,11 @@ export class DoctorProfileService {
   }
 
   /**
-   * Retrieves a single movie information entry by its unique id (_idNumber) and throws a "Not Found" exception if not found.
+   * Retrieves a single doctor information entry by its unique id (_idNumber) and throws a "Not Found" exception if not found.
    *
-   * @param {string} _id - The unique id of the movie information entry to find.
-   * @throws {NotFoundException} If no movie with the specified _idNumber is found.
-   * @returns {Promise<Movie>} A Promise that resolves to the found movie information entry.
+   * @param {string} _id - The unique id of the doctor information entry to find.
+   * @throws {NotFoundException} If no doctor with the specified _idNumber is found.
+   * @returns {Promise<Movie>} A Promise that resolves to the found doctor information entry.
    */
   async findOneWithException(_id: string): Promise<Doctor | void> {
     return await this.commonService.findWithNotFoundException(
@@ -247,12 +247,12 @@ export class DoctorProfileService {
   }
 
   /**
-   * Updates an movie information entry with the specified changes based on its unique id (idNumber).
+   * Updates an doctor information entry with the specified changes based on its unique id (idNumber).
    *
-   * @param {string} id - The unique id of the movie information entry to update.
-   * @param {UpdateMovieDto} updateMovieDto - The data containing the changes to apply to the movie information entry.
-   * @throws {DuplicatedMongoException} If the proposed changes result in a duplicate movie name.
-   * @returns {Promise<Movie>} A Promise that resolves when the movie information entry is successfully updated.
+   * @param {string} id - The unique id of the doctor information entry to update.
+   * @param {UpdateMovieDto} updateMovieDto - The data containing the changes to apply to the doctor information entry.
+   * @throws {DuplicatedMongoException} If the proposed changes result in a duplicate doctor name.
+   * @returns {Promise<Movie>} A Promise that resolves when the doctor information entry is successfully updated.
    */
   async update(id: string, updateMovieDto: UpdateDoctorDto): Promise<Doctor> {
     return await this.commonService.duplicatedMongo(
@@ -262,10 +262,10 @@ export class DoctorProfileService {
   }
 
   /**
-   * Deletes a movie information entry based on its unique id (_idNumber).
+   * Deletes a doctor information entry based on its unique id (_idNumber).
    *
-   * @param {string} _id - The unique id of the movie information entry to delete.
-   * @returns {Promise<void>} A Promise that resolves when the movie information entry is successfully deleted.
+   * @param {string} _id - The unique id of the doctor information entry to delete.
+   * @returns {Promise<void>} A Promise that resolves when the doctor information entry is successfully deleted.
    */
   async delete(_id: string): Promise<Doctor> {
     return await this.doctorProfileRepository.deleteById(_id);

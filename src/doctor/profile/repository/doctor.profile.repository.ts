@@ -26,9 +26,9 @@ export class DoctorProfileRepository {
   }
 
   /**
-   * Finds movies based on provided filters, with pagination support.
+   * Finds doctors based on provided filters, with pagination support.
    * @param usersFilterQuery Filters and pagination parameters.
-   * @returns Promise resolving to an object containing found movies and count.
+   * @returns Promise resolving to an object containing found doctors and count.
    */
   async find(usersFilterQuery: FindAllDto): Promise<FindAllReturn<Doctor>> {
     usersFilterQuery.sort ? usersFilterQuery.sort : { _id: 1 };
@@ -87,8 +87,8 @@ export class DoctorProfileRepository {
 
   /**
    * Creates multiple doctors in the database.
-   * @param genres Array of objects containing movie details to be created.
-   * @returns Promise resolving to an array of created movies.
+   * @param genres Array of objects containing doctor details to be created.
+   * @returns Promise resolving to an array of created doctors.
    */
   async createMultiple(doctors: CreateDoctorDto[]): Promise<Doctor[]> {
     const newUsers = await this.doctorModel.insertMany(doctors);
@@ -96,10 +96,10 @@ export class DoctorProfileRepository {
   }
 
   /**
-   * Updates a movie by its ID.
-   * @param _id The ID of the movie to be updated.
-   * @param updateMovieDto Updated movie details.
-   * @returns Promise resolving to the updated movie.
+   * Updates a doctor by its ID.
+   * @param _id The ID of the doctor to be updated.
+   * @param updateMovieDto Updated doctor details.
+   * @returns Promise resolving to the updated doctor.
    */
   async updateById(
     _id: string,
@@ -115,9 +115,9 @@ export class DoctorProfileRepository {
   }
 
   /**
-   * Deletes a movie by its ID.
-   * @param _id The ID of the movie to be deleted.
-   * @returns Promise resolving to the deleted movie.
+   * Deletes a doctor by its ID.
+   * @param _id The ID of the doctor to be deleted.
+   * @returns Promise resolving to the deleted doctor.
    */
   async deleteById(_id: string): Promise<Doctor> {
     const deletedItem = await this.doctorModel.findOneAndDelete({ _id });
