@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -23,10 +24,8 @@ import {
   CreatePatientDto,
   SearchQueryPatientDto,
   SortQueryPatientDto,
+  UpdatePatientDto,
 } from 'src/patient/dto';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { ADMINISTRATIVE_ROLES } from '../account/constants/roles';
-import { RoleGuard } from 'src/common/guards/roles.guard';
 
 /**
  * Controller responsible for handling HTTP requests related to patients.
@@ -87,8 +86,6 @@ export class PatientRegistryController {
    */
   @Version('1')
   @Post('/register')
-  @Roles(ADMINISTRATIVE_ROLES.ADMIN)
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_ADMINISTRATIVE), RoleGuard)
   @ApiResponse({
     status: 200,
     description: 'Patient created successfully',
@@ -96,6 +93,30 @@ export class PatientRegistryController {
   // @ApiBody({ schema: addStaff })
   async createPatient(@Body() createPatientDto: CreatePatientDto) {
     return await this.patientService.create(createPatientDto);
+  }
+
+  /**
+   * Update an existing patient by ID.
+   *
+   * @param id - The ID of the patient to update.
+   * @param updatePatientDto - The data to update the patient with.
+   * @returns The updated patient object.
+   */
+  @Version('1')
+  @Patch(':id')
+  @ApiResponse({
+    status: 200,
+    description: 'Patient updated successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Patient not found',
+  })
+  async updatePatient(
+    @Param() { id }: IdParamsDto,
+    @Body() updatePatientDto: UpdatePatientDto,
+  ) {
+    return await this.patientService.update(id, updatePatientDto);
   }
 
   /**
@@ -114,8 +135,6 @@ export class PatientRegistryController {
     status: 404,
     description: 'Patient not found',
   })
-  @Roles(ADMINISTRATIVE_ROLES.ADMIN)
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_ADMINISTRATIVE), RoleGuard)
   async deletePatient(@Param() { id }: IdParamsDto) {
     // TODO : switch to soft delete later
     return await this.patientService.delete(id);

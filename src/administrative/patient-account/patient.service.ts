@@ -48,6 +48,7 @@ export class PatientRegistryServices {
    * @param createPatientDto - The data for the new patient account to be created.
    * @returns A promise that resolves to the newly created patient account.
    */
+  // TODO handle duplicated keys
   async create(createPatientDto: CreatePatientDto) {
     return await this.patientService.create(createPatientDto);
   }
