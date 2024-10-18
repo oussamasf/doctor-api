@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
@@ -14,6 +14,7 @@ import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies/';
 
 // Schema
 import { Staff, StaffSchema } from './schemas/administrative.schema';
+import { AdminsSeeder } from './seeders/admin.seeder';
 
 @Module({
   imports: [
@@ -28,6 +29,13 @@ import { Staff, StaffSchema } from './schemas/administrative.schema';
     StaffRepository,
     AccessTokenStrategy,
     RefreshTokenStrategy,
+    AdminsSeeder,
   ],
 })
-export class AdministrativeAuthModule {}
+export class AdministrativeAuthModule implements OnModuleInit {
+  constructor(private adminsSeeder: AdminsSeeder) {}
+
+  onModuleInit() {
+    this.adminsSeeder.seed();
+  }
+}

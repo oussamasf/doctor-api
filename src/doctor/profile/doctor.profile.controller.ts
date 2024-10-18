@@ -11,10 +11,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBody, ApiResponse } from '@nestjs/swagger';
 
 // Service
-import { PatientAuthService } from './patient.auth.service';
+import { DoctorProfileService } from './doctor.profile.service';
 
 // Schemas
-import { Patient } from './schemas/patient.schema';
+import { Doctor } from './schemas/Doctor.schema';
 import { loginSchema } from './constants/swagger';
 
 // DTOS
@@ -26,56 +26,56 @@ import { LoginRes } from 'src/common/types';
 
 //? Controller class
 @Controller()
-@ApiTags('Patient/account')
-export class PatientAuthController {
+@ApiTags('Doctor/account')
+export class DoctorProfileController {
   /**
-   * Constructor for PatientAuthController
-   * @param patientAuthService - The PatientAuthService instance used for authentication and user management.
+   * Constructor for DoctorAuthController
+   * @param doctorProfileService - The DoctorAccountService instance used for authentication and user management.
    */
-  constructor(private readonly patientAuthService: PatientAuthService) {}
+  constructor(private readonly doctorProfileService: DoctorProfileService) {}
 
   /**
-   * Patient login endpoint.
+   * Doctor login endpoint.
    * @param loginDto - The LoginDto containing user login information.
-   * @returns A Promise that resolves to a LoginRes<Patient> with user information upon successful login.
+   * @returns A Promise that resolves to a LoginRes<Doctor> with user information upon successful login.
    */
   @Version('1')
   @Post('/login')
   @ApiBody({ schema: loginSchema })
   @ApiResponse({ status: 200, description: 'Login successful' })
-  async login(@Body() loginDto: LoginDto): Promise<LoginRes<Patient>> {
-    return await this.patientAuthService.login(loginDto);
+  async login(@Body() loginDto: LoginDto): Promise<LoginRes<Doctor>> {
+    return await this.doctorProfileService.login(loginDto);
   }
 
   /**
-   * Endpoint to retrieve the profile of the currently logged-in patient.
+   * Endpoint to retrieve the profile of the currently logged-in doctor.
    * @param req - The HTTP request object.
-   * @returns A Promise that resolves to a Patient object representing the logged-in patient's profile.
+   * @returns A Promise that resolves to a Doctor object representing the logged-in doctor's profile.
    */
   @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
   @Get('/profile')
-  async getLoggedUser(@Req() req: any): Promise<Patient> {
+  async getLoggedUser(@Req() req: any): Promise<Doctor> {
     return req.user;
   }
 
   /**
-   * Patient logout endpoint.
+   * Doctor logout endpoint.
    * @param req - The HTTP request object.
    */
   @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
   @Get('/logout')
   async logout(@Req() req: any) {
-    await this.patientAuthService.logout(req.user.email);
+    await this.doctorProfileService.logout(req.user.email);
   }
 
   /**
-   * Patient token refresh endpoint.
+   * Doctor token refresh endpoint.
    * @param req - The HTTP request object.
    * @returns A Promise that resolves to updated authentication tokens.
    */
   @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
   @Get('/refresh')
   async refresh(@Req() req: any) {
-    return await this.patientAuthService.refresh(req.user);
+    return await this.doctorProfileService.refresh(req.user);
   }
 }

@@ -7,3 +7,7 @@ export const global = {
   YOU_ARE_NOT_ALLOWED_TO_MANAGE_THIS_RESOURCE:
     'YOU_ARE_NOT_ALLOWED_TO_MANAGE_THIS_RESOURCE',
 };
+
+export const doctorErrorMessages = {
+  DOCTOR_NOT_FOUND: 'DOCTOR_NOT_FOUND',
+};
