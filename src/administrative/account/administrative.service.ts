@@ -13,7 +13,6 @@ import { CreateAdministrativeDto } from '../dto';
 import { LoginDto } from './dto';
 
 // Constants
-import { ADMINISTRATIVE_ROLES } from './constants/roles';
 import { global as globalErrorMessages } from '../../common/constants/errorMessages';
 import { AccessToken, LoginRes } from '../../common/types';
 
@@ -78,7 +77,6 @@ export class AdministrativeService {
     const refresh_token = await this.getRefreshToken(email, username);
 
     const userBody = {
-      roles: [ADMINISTRATIVE_ROLES.STAFF],
       refreshToken: await bcrypt.hash(
         refresh_token,
         parseInt(`${this.configService.get('CRYPTO_SALT_ROUNDS')}`),

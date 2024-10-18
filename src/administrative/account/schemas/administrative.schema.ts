@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { ADMINISTRATIVE_ROLES } from '../constants/roles/administrative.account.roles';
 
 export type StaffDocument = HydratedDocument<Staff>;
 
@@ -21,7 +22,7 @@ export class Staff {
   email: string;
 
   @Prop({ type: [String], required: true })
-  roles: string[];
+  roles: ADMINISTRATIVE_ROLES[];
 
   @Prop()
   refreshToken?: string;
