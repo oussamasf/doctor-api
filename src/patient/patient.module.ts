@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PatientAuthModule } from './account/patient.auth.module';
+import { PatientAuthModule } from './profile/patient.auth.module';
 import { RouterModule } from '@nestjs/core';
 
 @Module({

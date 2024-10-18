@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import * as mongoose from 'mongoose';
-import { Patient } from 'src/patient/account/schemas/patient.schema';
+import { Patient } from 'src/patient/profile/schemas/patient.schema';
 
 export type DoctorDocument = HydratedDocument<Doctor>;
 
