@@ -243,4 +243,25 @@ export class AppointmentController {
     // TODO : switch to soft delete later
     return await this.appointmentService.deleteAppointment(id);
   }
+
+  /**
+   * Cancel an existing appointment by ID.
+   *
+   * @param id - The ID of the appointment to cancel.
+   * @returns A success message or error.
+   */
+  @Version('1')
+  @Patch(':id/cancel')
+  @ApiResponse({
+    status: 200,
+    description: 'Appointment canceled successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Appointment not found',
+  })
+  async cancelAppointment(@Param() { id }: IdParamsDto, @Req() req: any) {
+    const doctorId = req.user.id;
+    return await this.appointmentService.cancelAppointment(id, doctorId);
+  }
 }

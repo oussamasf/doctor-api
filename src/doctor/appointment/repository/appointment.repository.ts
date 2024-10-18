@@ -114,6 +114,25 @@ export class AppointmentRepository {
   }
 
   /**
+   * Updates a Appointment by its ID.
+   * @param _id The ID of the Appointment to be updated.
+   * @param updateMovieDto Updated Appointment details.
+   * @returns Promise resolving to the updated Appointment.
+   */
+  async update(
+    query: { _id: string; doctorId?: string },
+    items: Partial<Appointment>,
+  ): Promise<Appointment> {
+    const updatedItem = await this.appointmentModel.findOneAndUpdate(
+      query,
+      items,
+      { new: true },
+    );
+
+    return updatedItem;
+  }
+
+  /**
    * Deletes a Appointment by its ID.
    * @param _id The ID of the Appointment to be deleted.
    * @returns Promise resolving to the deleted Appointment.

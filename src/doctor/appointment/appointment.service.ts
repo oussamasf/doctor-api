@@ -6,7 +6,7 @@ import {
   SortQueryAppointmentDto,
   SearchQueryAppointmentDto,
 } from './dto';
-import { Appointment } from './schemas/appointment.schema';
+import { Appointment, AppointmentStatus } from './schemas/appointment.schema';
 import { QueryParamsDto } from 'src/common/dto';
 import { FindAllReturn } from 'src/common/types';
 import { DoctorProfileRepository } from '../profile/repository/doctor.profile.repository';
@@ -162,6 +162,7 @@ export class AppointmentService {
         $lt: addDays(date, 1).toString(),
       },
       time,
+      status: { $ne: AppointmentStatus.CANCELLED },
     });
     const doctorConflicts = await this.appointmentRepository.find({
       _id: { $ne: id || new Types.ObjectId() },
@@ -171,8 +172,24 @@ export class AppointmentService {
         $lt: addDays(date, 1).toString(),
       },
       time,
+      status: { $ne: AppointmentStatus.CANCELLED },
     });
 
     return patientConflicts.length > 0 || doctorConflicts.length > 0;
+  }
+
+  async cancelAppointment(id: string, doctorId: string): Promise<Appointment> {
+    const item = await this.appointmentRepository.update(
+      { _id: id, doctorId },
+      {
+        status: AppointmentStatus.CANCELLED,
+      },
+    );
+    if (!item) {
+      throw new NotFoundException(
+        `Appointment with ID ${id} made by ${doctorId} not found`,
+      );
+    }
+    return item;
   }
 }
