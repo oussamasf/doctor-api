@@ -13,24 +13,18 @@ import { CommonModule } from './common/common.module';
 import { CommonService } from './common/common.service';
 import { PatientModule } from './patient/patient.module';
 import { configOptions } from 'utils/config/env';
+import { DoctorModule } from './doctor/doctor.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(configOptions),
     AdministrativeModule,
     PatientModule,
-
-    MongooseModule.forRoot(process.env.MONGO_URL),
-
-    //? rate limiter
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60,
-        limit: 10,
-      },
-    ]),
-
     CommonModule,
+    DoctorModule,
+
+    ConfigModule.forRoot(configOptions),
+    MongooseModule.forRoot(process.env.MONGO_URL),
+    ThrottlerModule.forRoot([{ ttl: 60, limit: 10 }]),
     EventEmitterModule.forRoot({ verboseMemoryLeak: true }),
   ],
   controllers: [],
