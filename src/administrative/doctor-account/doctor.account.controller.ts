@@ -9,7 +9,7 @@ import {
   UseGuards,
   Version,
 } from '@nestjs/common';
-import { DoctorRegistryServices } from './doctor.service';
+import { DoctorRegistryServices } from './doctor.account.service';
 import { IdParamsDto, QueryParamsDto } from '../../common/dto';
 
 import {

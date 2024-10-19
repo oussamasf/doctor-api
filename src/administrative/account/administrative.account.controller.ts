@@ -12,13 +12,13 @@ import { ApiTags, ApiBody } from '@nestjs/swagger';
 import { Request } from 'express';
 
 // Service
-import { AdministrativeService } from './administrative.service';
+import { AdministrativeService } from './administrative.account.service';
 
 // Schemas
 import { addStaff, loginSchema } from './constants/swagger';
 
 // DTOS
-import { CreateAdministrativeDto } from '../dto';
+import { CreateAdministrativeDto, ResetPasswordDto } from '../dto';
 import { LoginDto } from './dto';
 
 //Guards
@@ -109,6 +109,25 @@ export class administrativeAuthController {
   async refresh(@Req() req: any) {
     return await this.administrativeService.refresh(req.user);
   }
-}
 
-// TODO giving super-admin the privilege of creating another admin with password obligates making an endpoint to reset password for admins
+  /**
+   * Reset the password for an administrative user.
+   *
+   * @param req - The HTTP request object containing user information.
+   * @returns An object containing the new access token.
+   */
+  @Version('1')
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_ADMINISTRATIVE))
+  @Post('/reset-password')
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+    @Req() req: any,
+  ) {
+    const { password, email } = resetPasswordDto;
+    return await this.administrativeService.resetPassword(
+      email,
+      password,
+      req.user.id,
+    );
+  }
+}
