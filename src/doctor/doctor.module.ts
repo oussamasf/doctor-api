@@ -4,6 +4,7 @@ import { RouterModule } from '@nestjs/core';
 import { AppointmentModule } from './appointment/appointment.module';
 import { PatientForDoctorModule } from './patient-account/patient.module';
 import { PrescriptionModule } from './prescriptions/prescription.module';
+import { MedicalHistoryModule } from './medical-histories/medical-history.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { PrescriptionModule } from './prescriptions/prescription.module';
     AppointmentModule,
     PatientForDoctorModule,
     PrescriptionModule,
+    MedicalHistoryModule,
 
     RouterModule.register([
       {
@@ -28,6 +30,10 @@ import { PrescriptionModule } from './prescriptions/prescription.module';
       {
         path: 'doctor/prescription',
         module: PrescriptionModule,
+      },
+      {
+        path: 'doctor/medical-history',
+        module: MedicalHistoryModule,
       },
     ]),
   ],
