@@ -3,12 +3,14 @@ import { AdministrativeAuthModule } from './account/administrative.account.modul
 import { RouterModule } from '@nestjs/core';
 import { DoctorRegistryModule } from './doctor-account/doctor.account.module';
 import { PatientRegistryModule } from './patient-account/patient.account.module';
+import { AppointmentForAdministrativeModule } from './appointment/appointment.module';
 
 @Module({
   imports: [
     AdministrativeAuthModule,
     DoctorRegistryModule,
     PatientRegistryModule,
+    AppointmentForAdministrativeModule,
 
     RouterModule.register([
       {
@@ -22,6 +24,10 @@ import { PatientRegistryModule } from './patient-account/patient.account.module'
       {
         path: 'administrative/patient',
         module: PatientRegistryModule,
+      },
+      {
+        path: 'administrative/appointment',
+        module: AppointmentForAdministrativeModule,
       },
     ]),
   ],
