@@ -104,7 +104,7 @@ export class administrativeAuthController {
    * @returns An object containing the new access token.
    */
   @Version('1')
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_ADMINISTRATIVE))
+  @UseGuards(AuthGuard(AUTH_GUARD.REFRESH_TOKEN_ADMINISTRATIVE))
   @Get('/refresh')
   async refresh(@Req() req: any) {
     return await this.administrativeService.refresh(req.user);

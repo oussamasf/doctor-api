@@ -178,18 +178,6 @@ export class AppointmentController {
       }
     }
 
-    //? Validate if doctorId exists
-    if (doctorId) {
-      const doctorExists = await this.appointmentService.doesDoctorExist(
-        `${doctorId}`,
-      );
-      if (!doctorExists) {
-        throw new BadRequestException(
-          `Doctor with ID ${doctorId} does not exist.`,
-        );
-      }
-    }
-
     if (date) {
       const currentDateTime = new Date();
 

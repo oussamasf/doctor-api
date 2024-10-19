@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, UpdateQuery } from 'mongoose';
+import { FilterQuery, Model, UpdateQuery, Types } from 'mongoose';
 
 import { FindAllReturn } from 'src/common/types';
 import { FindAllDto } from 'src/common/dto';
@@ -140,5 +140,14 @@ export class AppointmentRepository {
   async deleteById(_id: string): Promise<Appointment> {
     const deletedItem = await this.appointmentModel.findOneAndDelete({ _id });
     return deletedItem;
+  }
+
+  /**
+   * Checks if a doctor exists with the given ID.
+   * @param id The ID to check for.
+   * @returns A promise that resolves to an object containing the ID if the doctor exists, or null if the doctor does not exist.
+   */
+  async exists(query: any): Promise<{ _id: Types.ObjectId }> {
+    return this.appointmentModel.exists(query);
   }
 }
