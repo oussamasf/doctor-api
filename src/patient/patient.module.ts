@@ -3,12 +3,14 @@ import { PatientProfileModule } from './profile/patient.profile.module';
 import { RouterModule } from '@nestjs/core';
 import { AppointmentForPatientModule } from './appointment/appointment.module';
 import { PrescriptionForPatientModule } from './prescriptions/prescription.module';
+import { MedicalHistoryForPatientModule } from './medical-histories/medical-history.module';
 
 @Module({
   imports: [
     PatientProfileModule,
     AppointmentForPatientModule,
     PrescriptionForPatientModule,
+    MedicalHistoryForPatientModule,
 
     RouterModule.register([
       {
@@ -22,6 +24,10 @@ import { PrescriptionForPatientModule } from './prescriptions/prescription.modul
       {
         path: 'patient/prescription',
         module: PrescriptionForPatientModule,
+      },
+      {
+        path: 'patient/medical-history',
+        module: MedicalHistoryForPatientModule,
       },
     ]),
   ],
