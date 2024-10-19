@@ -11,7 +11,7 @@ export const globalErrorMessages = {
   PASSWORD_HAS_BEEN_USED_RECENTLY: 'PASSWORD_HAS_BEEN_USED_RECENTLY',
   PASSWORD_TOO_SHORT:
     'Password must be minimum 8 characters long and contain at least one letter and one number',
-  PASSWORDS_DO_NOT_MATCH: 'Passwords do not match',
+  PASSWORDS_DO_NOT_MATCH: 'PASSWORDS_DO_NOT_MATCH',
   INVALID_PHONE_NUMBER: 'INVALID_PHONE_NUMBER',
   END_DATE_MUST_BE_AFTER_START_DATE: 'END_DATE_MUST_BE_AFTER_START_DATE',
 };
