@@ -12,7 +12,7 @@ import { ApiTags, ApiBody } from '@nestjs/swagger';
 import { Request } from 'express';
 
 // Service
-import { AdministrativeService } from './administrative.service';
+import { AdministrativeService } from './administrative.account.service';
 
 // Schemas
 import { addStaff, loginSchema } from './constants/swagger';
