@@ -83,18 +83,6 @@ export class AppointmentRepository {
   }
 
   /**
-   * Creates multiple appointments in the database.
-   * @param genres Array of objects containing Appointment details to be created.
-   * @returns Promise resolving to an array of created appointments.
-   */
-  async createMultiple(
-    items: Partial<Appointment>[],
-  ): Promise<Partial<Appointment>[]> {
-    const newItems = await this.appointmentModel.insertMany(items);
-    return newItems;
-  }
-
-  /**
    * Updates a Appointment by its ID.
    * @param _id The ID of the Appointment to be updated.
    * @param updateMovieDto Updated Appointment details.

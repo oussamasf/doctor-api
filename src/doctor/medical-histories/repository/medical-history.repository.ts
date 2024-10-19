@@ -83,18 +83,6 @@ export class MedicalHistoryRepository {
   }
 
   /**
-   * Creates multiple medicalHistories in the database.
-   * @param genres Array of objects containing MedicalHistory details to be created.
-   * @returns Promise resolving to an array of created medicalHistories.
-   */
-  async createMultiple(
-    items: Partial<MedicalHistory>[],
-  ): Promise<Partial<MedicalHistory>[]> {
-    const newItems = await this.medicalHistoryModel.insertMany(items);
-    return newItems;
-  }
-
-  /**
    * Updates a MedicalHistory by its ID.
    * @param _id The ID of the MedicalHistory to be updated.
    * @param updateMovieDto Updated MedicalHistory details.

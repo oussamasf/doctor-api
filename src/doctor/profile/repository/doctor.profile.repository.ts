@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, UpdateQuery, Types } from 'mongoose';
 
 import { Doctor, DoctorDocument } from '../schemas/doctor.schema';
-import { CreateDoctorDto, UpdateDoctorDto } from 'src/doctor/dto';
+import { UpdateDoctorDto } from 'src/doctor/dto';
 import { FindAllReturn } from 'src/common/types';
 import { FindAllDto } from 'src/common/dto';
 
@@ -83,16 +83,6 @@ export class DoctorProfileRepository {
     return await this.doctorModel.findOneAndUpdate({ email }, updateQuery, {
       new: true,
     });
-  }
-
-  /**
-   * Creates multiple doctors in the database.
-   * @param genres Array of objects containing doctor details to be created.
-   * @returns Promise resolving to an array of created doctors.
-   */
-  async createMultiple(doctors: CreateDoctorDto[]): Promise<Doctor[]> {
-    const newUsers = await this.doctorModel.insertMany(doctors);
-    return newUsers;
   }
 
   /**

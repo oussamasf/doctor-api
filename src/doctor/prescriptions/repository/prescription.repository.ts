@@ -83,18 +83,6 @@ export class PrescriptionRepository {
   }
 
   /**
-   * Creates multiple prescriptions in the database.
-   * @param genres Array of objects containing Prescription details to be created.
-   * @returns Promise resolving to an array of created prescriptions.
-   */
-  async createMultiple(
-    items: Partial<Prescription>[],
-  ): Promise<Partial<Prescription>[]> {
-    const newItems = await this.prescriptionModel.insertMany(items);
-    return newItems;
-  }
-
-  /**
    * Updates a Prescription by its ID.
    * @param _id The ID of the Prescription to be updated.
    * @param updateMovieDto Updated Prescription details.

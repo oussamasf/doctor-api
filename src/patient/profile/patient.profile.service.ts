@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
@@ -214,24 +214,6 @@ export class PatientProfileService {
    */
   async create(createPatientDto: CreatePatientDto): Promise<Patient> {
     return await this.patientProfileRepository.create(createPatientDto);
-  }
-
-  /**
-   * Creates multiple patients at once.
-   * @param createMovieDto Array of patient details to be created.
-   * @returns Promise that resolves to an array of created patients.
-   */
-  async createMultiple(
-    createPatientDto: CreatePatientDto[],
-  ): Promise<Patient[]> {
-    let results;
-    try {
-      results =
-        await this.patientProfileRepository.createMultiple(createPatientDto);
-    } catch (error) {
-      throw new ConflictException('already seeded');
-    }
-    return results;
   }
 
   /**
