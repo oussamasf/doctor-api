@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { globalErrorMessages } from 'src/common/constants/errorMessages';
 
 export type PrescriptionDocument = Prescription & Document;
 
@@ -45,7 +46,9 @@ PrescriptionSchema.pre('save', function (next) {
   const prescription = this as PrescriptionDocument;
 
   if (prescription.endDate < prescription.startDate) {
-    const error = new Error('End date must be after start date');
+    const error = new Error(
+      globalErrorMessages.END_DATE_MUST_BE_AFTER_START_DATE,
+    );
     return next(error);
   }
 

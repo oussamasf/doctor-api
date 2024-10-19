@@ -13,6 +13,7 @@ export const globalErrorMessages = {
     'Password must be minimum 8 characters long and contain at least one letter and one number',
   PASSWORDS_DO_NOT_MATCH: 'Passwords do not match',
   INVALID_PHONE_NUMBER: 'INVALID_PHONE_NUMBER',
+  END_DATE_MUST_BE_AFTER_START_DATE: 'END_DATE_MUST_BE_AFTER_START_DATE',
 };
 
 export const doctorErrorMessages = {

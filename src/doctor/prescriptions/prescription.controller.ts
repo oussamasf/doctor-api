@@ -29,6 +29,11 @@ import {
   SortQueryPrescriptionDto,
   UpdatePrescriptionByDoctorDto,
 } from './dto';
+import {
+  appointmentErrorMessages,
+  globalErrorMessages,
+  patientErrorMessages,
+} from 'src/common/constants/errorMessages';
 
 /**
  * Controller responsible for handling HTTP requests related to prescriptions.
@@ -70,9 +75,7 @@ export class PrescriptionController {
     );
 
     if (!patientExists) {
-      throw new BadRequestException(
-        `Patient with ID ${patientId} does not exist.`,
-      );
+      throw new BadRequestException(patientErrorMessages.PATIENT_NOT_FOUND);
     }
 
     //? Validate  Appointment existence
@@ -84,7 +87,7 @@ export class PrescriptionController {
 
     if (!appointmentExists) {
       throw new BadRequestException(
-        `Appointment with ID ${appointmentId} does not exist.`,
+        appointmentErrorMessages.APPOINTMENT_NOT_FOUND,
       );
     }
 
@@ -94,7 +97,9 @@ export class PrescriptionController {
     });
 
     if (!item) {
-      throw new InternalServerErrorException('Failed to create prescription');
+      throw new InternalServerErrorException(
+        globalErrorMessages.SOMETHING_WENT_WRONG,
+      );
     }
 
     await this.prescriptionService.completeAppointment(`${appointmentId}`);
@@ -171,9 +176,7 @@ export class PrescriptionController {
         `${patientId}`,
       );
       if (!patientExists) {
-        throw new BadRequestException(
-          `Patient with ID ${patientId} does not exist.`,
-        );
+        throw new BadRequestException(patientErrorMessages.PATIENT_NOT_FOUND);
       }
     }
 
@@ -186,7 +189,7 @@ export class PrescriptionController {
 
     if (!appointmentExists) {
       throw new BadRequestException(
-        `Appointment with ID ${appointmentId} does not exist.`,
+        appointmentErrorMessages.APPOINTMENT_NOT_FOUND,
       );
     }
 

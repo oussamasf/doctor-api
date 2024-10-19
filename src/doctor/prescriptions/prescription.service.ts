@@ -16,6 +16,7 @@ import {
   Appointment,
   AppointmentStatus,
 } from '../appointment/schemas/appointment.schema';
+import { prescriptionErrorMessages } from 'src/common/constants/errorMessages';
 
 @Injectable()
 export class PrescriptionService {
@@ -46,7 +47,9 @@ export class PrescriptionService {
   async getPrescriptionById(_id: string): Promise<Prescription> {
     const item = await this.prescriptionRepository.findOne({ _id });
     if (!item) {
-      throw new NotFoundException(`Prescription with ID ${_id} not found`);
+      throw new NotFoundException(
+        prescriptionErrorMessages.PRESCRIPTION_NOT_FOUND,
+      );
     }
     return item;
   }
@@ -80,7 +83,9 @@ export class PrescriptionService {
       updatePrescriptionDto,
     );
     if (!item) {
-      throw new NotFoundException(`Prescription with ID ${id} not found`);
+      throw new NotFoundException(
+        prescriptionErrorMessages.PRESCRIPTION_NOT_FOUND,
+      );
     }
     return item;
   }
@@ -94,7 +99,9 @@ export class PrescriptionService {
   async deletePrescription(id: string): Promise<Prescription> {
     const item = await this.prescriptionRepository.deleteById(id);
     if (!item) {
-      throw new NotFoundException(`Prescription with ID ${id} not found`);
+      throw new NotFoundException(
+        prescriptionErrorMessages.PRESCRIPTION_NOT_FOUND,
+      );
     }
     return item;
   }
@@ -111,7 +118,7 @@ export class PrescriptionService {
     const item = await this.prescriptionRepository.findOne({ _id, patientId });
     if (!item) {
       throw new NotFoundException(
-        `Prescription with ID ${_id} made by ${patientId} not found`,
+        prescriptionErrorMessages.PRESCRIPTION_NOT_FOUND,
       );
     }
     return item;
