@@ -11,7 +11,7 @@ import { PatientAuthController } from './patient.profile.controller';
 import { PatientProfileService } from './patient.profile.service';
 
 //
-import { PatientAuthRepository } from './repository/patient.profile.repository';
+import { PatientProfileRepository } from './repository/patient.profile.repository';
 
 // Schema
 import { Patient, PatientSchema } from './schemas/patient.schema';
@@ -27,10 +27,10 @@ import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
   controllers: [PatientAuthController],
   providers: [
     PatientProfileService,
-    PatientAuthRepository,
+    PatientProfileRepository,
     AccessTokenStrategy,
     RefreshTokenStrategy,
   ],
-  exports: [PatientProfileService],
+  exports: [PatientProfileService, PatientProfileRepository],
 })
 export class PatientProfileModule {}

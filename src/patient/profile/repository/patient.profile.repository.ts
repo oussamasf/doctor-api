@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, UpdateQuery } from 'mongoose';
+import { FilterQuery, Model, UpdateQuery, Types } from 'mongoose';
 
 import { Patient, PatientDocument } from '../schemas/patient.schema';
 import { CreatePatientDto, UpdatePatientDto } from 'src/patient/dto';
@@ -11,7 +11,7 @@ import { FindAllReturn } from 'src/common/types';
  * Repository handling operations related to patient authentication.
  */
 @Injectable()
-export class PatientAuthRepository {
+export class PatientProfileRepository {
   constructor(
     @InjectModel(Patient.name) private patientModel: Model<PatientDocument>,
   ) {}
@@ -122,5 +122,14 @@ export class PatientAuthRepository {
   async deleteById(_id: string): Promise<Patient> {
     const deletedItem = await this.patientModel.findOneAndDelete({ _id });
     return deletedItem;
+  }
+
+  /**
+   * Checks if a patient exists with the given ID.
+   * @param id The ID to check for.
+   * @returns A promise that resolves to an object containing the ID if the patient exists, or null if the patient does not exist.
+   */
+  async exists(_id: string): Promise<{ _id: Types.ObjectId }> {
+    return this.patientModel.exists({ _id });
   }
 }

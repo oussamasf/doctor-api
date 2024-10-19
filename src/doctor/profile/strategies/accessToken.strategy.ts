@@ -7,7 +7,7 @@ import AUTH_GUARD from '../../../common/constants/authGuards';
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(
   Strategy,
-  AUTH_GUARD.ACCESS_TOKEN_PATIENT,
+  AUTH_GUARD.ACCESS_TOKEN_DOCTOR,
 ) {
   constructor(private readonly doctorAuthService: DoctorProfileService) {
     super({
