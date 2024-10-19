@@ -1,0 +1,144 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrescriptionRepository } from './repository/prescription.repository';
+import {
+  CreatePrescriptionDto,
+  UpdatePrescriptionDto,
+  SortQueryPrescriptionDto,
+  SearchQueryPrescriptionDto,
+} from './dto';
+import { Prescription } from './schemas/prescription.schema';
+import { QueryParamsDto } from 'src/common/dto';
+import { FindAllReturn } from 'src/common/types';
+import { DoctorProfileRepository } from '../profile/repository/doctor.profile.repository';
+import { PatientProfileRepository } from 'src/patient/profile/repository/patient.profile.repository';
+
+@Injectable()
+export class PrescriptionService {
+  constructor(
+    private readonly prescriptionRepository: PrescriptionRepository,
+    private readonly patientRepository: PatientProfileRepository,
+    private readonly doctorRepository: DoctorProfileRepository,
+  ) {}
+
+  /**
+   *  Creates an prescription.
+   * @param createPrescriptionDto
+   * @returns
+   */
+  async createPrescription(
+    createPrescriptionDto: CreatePrescriptionDto,
+  ): Promise<Prescription> {
+    return this.prescriptionRepository.create(createPrescriptionDto);
+  }
+
+  /**
+   * Gets an prescription by ID.
+   * @param id The ID of the prescription.
+   * @returns The prescription.
+   * @throws NotFoundException if the prescription is not found.
+   */
+  async getPrescriptionById(_id: string): Promise<Prescription> {
+    const item = await this.prescriptionRepository.findOne({ _id });
+    if (!item) {
+      throw new NotFoundException(`Prescription with ID ${_id} not found`);
+    }
+    return item;
+  }
+
+  /**
+   * Retrieves a list of prescriptions based on specified query parameters.
+   *
+   * @param {QueryParamsDto} query - The query parameters for pagination (e.g., limit, skip).
+   * @param {SearchQueryPrescriptionDto} search - The search criteria to filter prescriptions (optional).
+   * @param {SortQueryPrescriptionDto} sort - The sorting criteria for the result (optional).
+   * @returns {Promise<FindAllReturn<Prescription>>} A Promise that resolves to a paginated list of prescriptions.
+   */
+  async findAll(
+    query: QueryParamsDto,
+    search: SearchQueryPrescriptionDto,
+    sort: SortQueryPrescriptionDto,
+  ): Promise<FindAllReturn<Prescription>> {
+    const { limit, skip } = query;
+
+    const findQuery = { limit, skip, search, sort };
+
+    return await this.prescriptionRepository.findAndCount(findQuery);
+  }
+
+  async updatePrescription(
+    id: string,
+    updatePrescriptionDto: UpdatePrescriptionDto,
+  ): Promise<Prescription> {
+    const item = await this.prescriptionRepository.updateById(
+      id,
+      updatePrescriptionDto,
+    );
+    if (!item) {
+      throw new NotFoundException(`Prescription with ID ${id} not found`);
+    }
+    return item;
+  }
+
+  /**
+   * Deletes an prescription by its ID.
+   * @param {string} id - The id of the prescription to delete.
+   * @returns {Promise<Prescription>} A Promise that resolves to the deleted prescription.
+   * @throws {NotFoundException} If the prescription with the given ID is not found.
+   */
+  async deletePrescription(id: string): Promise<Prescription> {
+    const item = await this.prescriptionRepository.deleteById(id);
+    if (!item) {
+      throw new NotFoundException(`Prescription with ID ${id} not found`);
+    }
+    return item;
+  }
+
+  /**
+   * Retrieves a list of prescriptions for the specified patient ID.
+   * @param {string} patientId - The ID of the patient whose prescriptions to retrieve.
+   * @returns {Promise<Prescription[]>} A Promise that resolves to an array of prescriptions.
+   */
+  async getPrescriptionByPatientId(
+    _id: string,
+    patientId: string,
+  ): Promise<Prescription> {
+    const item = await this.prescriptionRepository.findOne({ _id, patientId });
+    if (!item) {
+      throw new NotFoundException(
+        `Prescription with ID ${_id} made by ${patientId} not found`,
+      );
+    }
+    return item;
+  }
+
+  /**
+   * Retrieves a list of prescriptions for the specified prescription ID.
+   * @param {string} doctorId - The ID of the prescription whose doctor to retrieve.
+   * @returns {Promise<Prescription[]>} A Promise that resolves to an array of prescriptions.
+   */
+  async getPrescriptionsByDoctorId(doctorId: string): Promise<Prescription[]> {
+    return this.prescriptionRepository.find({ doctorId });
+  }
+
+  /**
+   * Checks if a doctor with the given ID exists.
+   *
+   * @param {string} doctorId - The ID of the doctor to check existence for.
+   * @returns {Promise<boolean>} A Promise that resolves to true if the doctor exists, false otherwise.
+   */
+  async doesDoctorExist(doctorId: string): Promise<boolean> {
+    const doctor = await this.doctorRepository.exists(doctorId);
+    return !!doctor;
+  }
+
+  /**
+   * Checks if a patient with the given ID exists.
+   *
+   * @param {string} patientId - The ID of the patient to check existence for.
+   * @returns {Promise<boolean>} A Promise that resolves to true if the patient exists, false otherwise.
+   */
+  async doesPatientExist(patientId: string): Promise<boolean> {
+    const patient = await this.patientRepository.exists(patientId);
+    return !!patient;
+  }
+}
