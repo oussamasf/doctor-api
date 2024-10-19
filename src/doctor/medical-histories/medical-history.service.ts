@@ -11,8 +11,8 @@ import { QueryParamsDto } from 'src/common/dto';
 import { FindAllReturn } from 'src/common/types';
 import { DoctorProfileRepository } from '../profile/repository/doctor.profile.repository';
 import { PatientProfileRepository } from 'src/patient/profile/repository/patient.profile.repository';
-import { AppointmentRepository } from '../appointment/repository/appointment.repository';
-import { AppointmentStatus } from '../appointment/schemas/appointment.schema';
+import { PrescriptionRepository } from '../prescriptions/repository/prescription.repository';
+import { FilterQuery } from 'mongoose';
 
 @Injectable()
 export class MedicalHistoryService {
@@ -20,7 +20,7 @@ export class MedicalHistoryService {
     private readonly medicalHistoryRepository: MedicalHistoryRepository,
     private readonly patientRepository: PatientProfileRepository,
     private readonly doctorRepository: DoctorProfileRepository,
-    private readonly appointmentRepository: AppointmentRepository,
+    private readonly prescriptionRepository: PrescriptionRepository,
   ) {}
 
   /**
@@ -32,6 +32,17 @@ export class MedicalHistoryService {
     createMedicalHistoryDto: CreateMedicalHistoryDto,
   ): Promise<MedicalHistory> {
     return this.medicalHistoryRepository.create(createMedicalHistoryDto);
+  }
+
+  /**
+   * Finds a medicalHistory by the given filter query.
+   * @param filterQuery The filter query to search for a medicalHistory.
+   * @returns A promise that resolves to the found medicalHistory.
+   */
+  async findOne(
+    filterQuery: FilterQuery<MedicalHistory>,
+  ): Promise<MedicalHistory> {
+    return this.medicalHistoryRepository.findOne(filterQuery);
   }
 
   /**
@@ -156,38 +167,13 @@ export class MedicalHistoryService {
    * @param {string} patientId - The ID of the patient to check existence for.
    * @returns {Promise<boolean>} A Promise that resolves to true if the patient exists, false otherwise.
    */
-  async doesAppointmentExist(
-    appointmentId: string,
+  async doesPrescriptionExist(
+    prescriptionId: string,
     doctorId: string,
   ): Promise<boolean> {
-    const today = new Date();
-    const startOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      0,
-      0,
-      0,
-    );
-    const endOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate() + 1,
-      0,
-      0,
-      0,
-    );
-
-    const item = await this.appointmentRepository.exists({
-      _id: appointmentId,
-      doctorId: doctorId,
-      date: {
-        $gte: startOfDay,
-        $lt: endOfDay,
-      },
-      status: {
-        $nin: [AppointmentStatus.CANCELLED, AppointmentStatus.COMPLETED],
-      },
+    const item = await this.prescriptionRepository.exists({
+      _id: prescriptionId,
+      doctorId,
     });
     return !!item;
   }

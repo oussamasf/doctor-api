@@ -61,8 +61,17 @@ export class MedicalHistoryController {
     @Body() createMedicalHistoryDto: CreateMedicalHistoryByDoctorDto,
     @Req() req: any,
   ) {
-    const { patientId } = createMedicalHistoryDto;
+    const { patientId, prescriptionId } = createMedicalHistoryDto;
     const doctorId = req.user.id;
+
+    const uniquePrescription = await this.medicalHistoryService.findOne({
+      prescriptionId,
+    });
+    if (uniquePrescription) {
+      throw new BadRequestException(
+        `Prescription with ID ${prescriptionId} already exists.`,
+      );
+    }
 
     //? Validate Patient and Doctor existence
     const patientExists = await this.medicalHistoryService.doesPatientExist(
@@ -72,6 +81,17 @@ export class MedicalHistoryController {
     if (!patientExists) {
       throw new BadRequestException(
         `Patient with ID ${patientId} does not exist.`,
+      );
+    }
+
+    const prescriptionExists =
+      await this.medicalHistoryService.doesPrescriptionExist(
+        `${prescriptionId}`,
+        `${doctorId}`,
+      );
+    if (!prescriptionExists) {
+      throw new BadRequestException(
+        `Prescription with ID ${prescriptionId} does not exist.`,
       );
     }
 
@@ -147,7 +167,7 @@ export class MedicalHistoryController {
     @Body() updateMedicalHistoryDto: UpdateMedicalHistoryByDoctorDto,
     @Req() req: any,
   ) {
-    const { patientId } = updateMedicalHistoryDto;
+    const { patientId, prescriptionId } = updateMedicalHistoryDto;
     const doctorId = req.user.id;
 
     //? Validate if patientId exists
@@ -158,6 +178,20 @@ export class MedicalHistoryController {
       if (!patientExists) {
         throw new BadRequestException(
           `Patient with ID ${patientId} does not exist.`,
+        );
+      }
+    }
+
+    if (prescriptionId) {
+      const prescriptionExists =
+        await this.medicalHistoryService.doesPrescriptionExist(
+          `${prescriptionId}`,
+          `${doctorId}`,
+        );
+
+      if (!prescriptionExists) {
+        throw new BadRequestException(
+          `Prescription with ID ${prescriptionId} does not exist.`,
         );
       }
     }

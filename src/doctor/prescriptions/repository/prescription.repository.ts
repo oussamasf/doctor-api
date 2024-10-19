@@ -141,4 +141,13 @@ export class PrescriptionRepository {
     const deletedItem = await this.prescriptionModel.findOneAndDelete({ _id });
     return deletedItem;
   }
+
+  /**
+   * Checks if a Prescription exists with the given ID.
+   * @param _id The ID to check for.
+   * @returns A promise that resolves to an object containing the ID if the Prescription exists, or null if it does not exist.
+   */
+  async exists(query: any) {
+    return this.prescriptionModel.exists(query);
+  }
 }

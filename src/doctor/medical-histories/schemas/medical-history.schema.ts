@@ -13,6 +13,14 @@ export class MedicalHistory {
   @Prop({ type: Types.ObjectId, ref: 'Doctor', required: true })
   doctorId: Types.ObjectId;
 
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'Prescription',
+    required: true,
+    unique: true,
+  })
+  prescriptionId: Types.ObjectId;
+
   @Prop({ required: true })
   diagnosis: string;
 

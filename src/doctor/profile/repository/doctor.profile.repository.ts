@@ -21,8 +21,8 @@ export class DoctorProfileRepository {
    * @param userFilterQuery The filter query to search for a Doctor.
    * @returns A promise that resolves to the found Doctor.
    */
-  async findOne(userFilterQuery: FilterQuery<Doctor>): Promise<Doctor> {
-    return this.doctorModel.findOne(userFilterQuery);
+  async findOne(filterQuery: FilterQuery<Doctor>): Promise<Doctor> {
+    return this.doctorModel.findOne(filterQuery);
   }
 
   /**

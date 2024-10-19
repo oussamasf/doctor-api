@@ -12,6 +12,10 @@ export class CreateMedicalHistoryDto {
   readonly doctorId: Types.ObjectId;
 
   @IsNotEmpty()
+  @IsMongoId()
+  readonly prescriptionId: Types.ObjectId;
+
+  @IsNotEmpty()
   @IsString()
   readonly diagnosis: string;
 

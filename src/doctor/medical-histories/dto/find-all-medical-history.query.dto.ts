@@ -13,6 +13,10 @@ export class SearchQueryMedicalHistoryDto {
   readonly doctorId?: string;
 
   @IsOptional()
+  @IsMongoId()
+  readonly prescriptionId?: string;
+
+  @IsOptional()
   @IsString()
   readonly diagnosis?: string;
 
@@ -41,6 +45,16 @@ export class SortQueryMedicalHistoryDto extends SortQueryCommonDto {
     description: 'Sort by doctorId: 1 for ascending, -1 for descending',
   })
   doctorId?: 1 | -1;
+
+  @IsIn([1, -1])
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value))
+  @ApiProperty({
+    required: false,
+    enum: [1, -1],
+    description: 'Sort by prescriptionId: 1 for ascending, -1 for descending',
+  })
+  prescriptionId?: 1 | -1;
 
   @IsIn([1, -1])
   @IsOptional()
