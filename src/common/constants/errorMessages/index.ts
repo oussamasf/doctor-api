@@ -34,3 +34,7 @@ export const appointmentErrorMessages = {
 export const prescriptionErrorMessages = {
   PRESCRIPTION_NOT_FOUND: 'PRESCRIPTION_NOT_FOUND',
 };
+
+export const medicalHistoryErrorMessages = {
+  MEDICAL_HISTORY_NOT_FOUND: 'MEDICAL_HISTORY_NOT_FOUND',
+};
