@@ -12,7 +12,7 @@ import { LoginDto } from './dto';
 // Constants
 import {
   doctorErrorMessages,
-  global as globalErrorMessages,
+  globalErrorMessages,
 } from '../../common/constants/errorMessages';
 import { CommonService } from '../../common/common.service';
 import { Doctor } from './schemas/doctor.schema';

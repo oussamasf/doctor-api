@@ -11,7 +11,7 @@ import { LoginDto } from './dto';
 
 // Constants
 import {
-  global as globalErrorMessages,
+  globalErrorMessages,
   patientErrorMessages,
 } from '../../common/constants/errorMessages';
 import { CommonService } from '../../common/common.service';

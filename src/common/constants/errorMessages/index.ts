@@ -1,4 +1,4 @@
-export const global = {
+export const globalErrorMessages = {
   TOO_MANY_REQUESTS: 'TOO_MANY_REQUESTS',
   EMAIL_ALREADY_EXISTS: 'EMAIL_ALREADY_EXISTS',
   USER_NOT_FOUND: 'USER_NOT_FOUND',
@@ -6,6 +6,12 @@ export const global = {
   SOMETHING_WENT_WRONG: 'SOMETHING_WENT_WRONG',
   YOU_ARE_NOT_ALLOWED_TO_MANAGE_THIS_RESOURCE:
     'YOU_ARE_NOT_ALLOWED_TO_MANAGE_THIS_RESOURCE',
+  YOU_ARE_NOT_AUTHORIZED_TO_PERFORM_THIS_ACTION:
+    'YOU_ARE_NOT_AUTHORIZED_TO_PERFORM_THIS_ACTION',
+  PASSWORD_HAS_BEEN_USED_RECENTLY: 'PASSWORD_HAS_BEEN_USED_RECENTLY',
+  PASSWORD_TOO_SHORT:
+    'Password must be minimum 8 characters long and contain at least one letter and one number',
+  PASSWORDS_DO_NOT_MATCH: 'Passwords do not match',
 };
 
 export const doctorErrorMessages = {

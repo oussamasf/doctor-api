@@ -9,6 +9,28 @@ import {
 import { ADMINISTRATIVE_ROLES } from '../account/constants/roles';
 import { ApiProperty } from '@nestjs/swagger';
 import { MatchPasswords } from 'src/common/decorators/matchPassword.decorator';
+import { globalErrorMessages } from 'src/common/constants/errorMessages';
+
+export class ResetPasswordDto {
+  @IsString()
+  @MinLength(8)
+  @Matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, {
+    message: globalErrorMessages.PASSWORD_TOO_SHORT,
+  })
+  @ApiProperty()
+  password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MatchPasswords('password', {
+    message: globalErrorMessages.PASSWORDS_DO_NOT_MATCH,
+  })
+  @ApiProperty()
+  confirmPassword: string;
+
+  @IsEmail()
+  email: string;
+}
 
 export class CreateAdministrativeDto {
   @IsString()
@@ -24,35 +46,16 @@ export class CreateAdministrativeDto {
   @IsString()
   @MinLength(8)
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, {
-    message:
-      'Password must be minimum 8 characters long and contain at least one letter and one number',
+    message: globalErrorMessages.PASSWORD_TOO_SHORT,
   })
   @ApiProperty()
   password: string;
 
   @IsString()
   @IsNotEmpty()
-  @MatchPasswords('password', { message: 'Passwords do not match' })
-  @ApiProperty()
-  confirmPassword: string;
-
-  @IsEmail()
-  email: string;
-}
-
-export class ResetPasswordDto {
-  @IsString()
-  @MinLength(8)
-  @Matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, {
-    message:
-      'Password must be minimum 8 characters long and contain at least one letter and one number',
+  @MatchPasswords('password', {
+    message: globalErrorMessages.PASSWORDS_DO_NOT_MATCH,
   })
-  @ApiProperty()
-  password: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @MatchPasswords('password', { message: 'Passwords do not match' })
   @ApiProperty()
   confirmPassword: string;
 

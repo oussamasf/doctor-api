@@ -17,7 +17,7 @@ import { CreateAdministrativeDto } from '../dto';
 import { LoginDto } from './dto';
 
 // Constants
-import { global as globalErrorMessages } from '../../common/constants/errorMessages';
+import { globalErrorMessages } from '../../common/constants/errorMessages';
 import { AccessToken, LoginRes } from '../../common/types';
 
 import { Types } from 'mongoose';
@@ -245,7 +245,9 @@ export class AdministrativeService {
       _id: Types.ObjectId;
     };
     if (!staff || staff._id.toString() !== userId)
-      throw new NotFoundException('You are not authorized for this resource');
+      throw new NotFoundException(
+        globalErrorMessages.YOU_ARE_NOT_AUTHORIZED_TO_PERFORM_THIS_ACTION,
+      );
 
     const isUsedPassword = await this._isPasswordReused(
       password,
@@ -253,7 +255,9 @@ export class AdministrativeService {
     );
 
     if (isUsedPassword) {
-      throw new BadRequestException('Password has been used recently');
+      throw new BadRequestException(
+        globalErrorMessages.PASSWORD_HAS_BEEN_USED_RECENTLY,
+      );
     }
 
     const hashedPassword = await bcrypt.hash(
