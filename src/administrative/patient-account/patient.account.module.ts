@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { PatientRegistryServices } from './patient.service';
-import { PatientRegistryController } from './patient.controller';
+import { PatientRegistryServices } from './patient.account.service';
+import { PatientRegistryController } from './patient.account.controller';
 import { PatientProfileModule } from 'src/patient/profile/patient.profile.module';
 
 @Module({
