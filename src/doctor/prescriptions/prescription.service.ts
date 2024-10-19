@@ -11,6 +11,11 @@ import { QueryParamsDto } from 'src/common/dto';
 import { FindAllReturn } from 'src/common/types';
 import { DoctorProfileRepository } from '../profile/repository/doctor.profile.repository';
 import { PatientProfileRepository } from 'src/patient/profile/repository/patient.profile.repository';
+import { AppointmentRepository } from '../appointment/repository/appointment.repository';
+import {
+  Appointment,
+  AppointmentStatus,
+} from '../appointment/schemas/appointment.schema';
 
 @Injectable()
 export class PrescriptionService {
@@ -18,6 +23,7 @@ export class PrescriptionService {
     private readonly prescriptionRepository: PrescriptionRepository,
     private readonly patientRepository: PatientProfileRepository,
     private readonly doctorRepository: DoctorProfileRepository,
+    private readonly appointmentRepository: AppointmentRepository,
   ) {}
 
   /**
@@ -140,5 +146,63 @@ export class PrescriptionService {
   async doesPatientExist(patientId: string): Promise<boolean> {
     const patient = await this.patientRepository.exists(patientId);
     return !!patient;
+  }
+
+  /**
+   * Checks if a patient with the given ID exists.
+   *
+   * @param {string} patientId - The ID of the patient to check existence for.
+   * @returns {Promise<boolean>} A Promise that resolves to true if the patient exists, false otherwise.
+   */
+  async doesAppointmentExist(
+    appointmentId: string,
+    doctorId: string,
+  ): Promise<boolean> {
+    const today = new Date();
+    const startOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+      0,
+      0,
+      0,
+    );
+    const endOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 1,
+      0,
+      0,
+      0,
+    );
+
+    const item = await this.appointmentRepository.exists({
+      _id: appointmentId,
+      doctorId: doctorId,
+      date: {
+        $gte: startOfDay,
+        $lt: endOfDay,
+      },
+      status: {
+        $nin: [AppointmentStatus.CANCELLED, AppointmentStatus.COMPLETED],
+      },
+    });
+    return !!item;
+  }
+
+  /**
+   * Marks an appointment as completed.
+   *
+   * @param {string} appointmentId - The ID of the appointment to mark as completed.
+   * @returns {Promise<Appointment>} A Promise that resolves to the updated appointment.
+   */
+  async completeAppointment(appointmentId: string): Promise<Appointment> {
+    const item = await this.appointmentRepository.update(
+      { _id: appointmentId },
+      {
+        status: AppointmentStatus.COMPLETED,
+      },
+    );
+    return item;
   }
 }

@@ -13,6 +13,9 @@ export class Prescription {
   @Prop({ type: Types.ObjectId, ref: 'Doctor', required: true })
   doctorId: Types.ObjectId;
 
+  @Prop({ type: Types.ObjectId, ref: 'Appointment', required: true })
+  appointmentId: Types.ObjectId;
+
   @Prop({
     type: [
       {

@@ -34,6 +34,10 @@ export class CreatePrescriptionDto {
   @IsMongoId()
   readonly doctorId: Types.ObjectId;
 
+  @IsNotEmpty()
+  @IsMongoId()
+  readonly appointmentId: Types.ObjectId;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => MedicationDto)

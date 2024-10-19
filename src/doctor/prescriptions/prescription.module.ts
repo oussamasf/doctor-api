@@ -18,6 +18,7 @@ import {
 } from './schemas/prescription.schema';
 import { PatientProfileModule } from 'src/patient/profile/patient.profile.module';
 import { DoctorProfileModule } from '../profile/doctor.profile.module';
+import { AppointmentModule } from '../appointment/appointment.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { DoctorProfileModule } from '../profile/doctor.profile.module';
     MongooseModule.forFeature([
       { name: Prescription.name, schema: PrescriptionSchema },
     ]),
+    AppointmentModule,
   ],
   controllers: [PrescriptionController],
   providers: [PrescriptionService, PrescriptionRepository],

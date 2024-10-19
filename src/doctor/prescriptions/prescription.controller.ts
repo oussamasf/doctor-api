@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  InternalServerErrorException,
   Param,
   Patch,
   Post,
@@ -60,7 +61,7 @@ export class PrescriptionController {
     @Body() createPrescriptionDto: CreatePrescriptionByDoctorDto,
     @Req() req: any,
   ) {
-    const { patientId } = createPrescriptionDto;
+    const { patientId, appointmentId } = createPrescriptionDto;
     const doctorId = req.user.id;
 
     //? Validate Patient and Doctor existence
@@ -74,10 +75,31 @@ export class PrescriptionController {
       );
     }
 
-    return await this.prescriptionService.createPrescription({
+    //? Validate  Appointment existence
+    const appointmentExists =
+      await this.prescriptionService.doesAppointmentExist(
+        `${appointmentId}`,
+        doctorId,
+      );
+
+    if (!appointmentExists) {
+      throw new BadRequestException(
+        `Appointment with ID ${appointmentId} does not exist.`,
+      );
+    }
+
+    const item = await this.prescriptionService.createPrescription({
       doctorId,
       ...createPrescriptionDto,
     });
+
+    if (!item) {
+      throw new InternalServerErrorException('Failed to create prescription');
+    }
+
+    await this.prescriptionService.completeAppointment(`${appointmentId}`);
+
+    return item;
   }
 
   /**
@@ -140,7 +162,7 @@ export class PrescriptionController {
     @Body() updatePrescriptionDto: UpdatePrescriptionByDoctorDto,
     @Req() req: any,
   ) {
-    const { patientId } = updatePrescriptionDto;
+    const { patientId, appointmentId } = updatePrescriptionDto;
     const doctorId = req.user.id;
 
     //? Validate if patientId exists
@@ -153,6 +175,19 @@ export class PrescriptionController {
           `Patient with ID ${patientId} does not exist.`,
         );
       }
+    }
+
+    //? Validate  Appointment existence
+    const appointmentExists =
+      await this.prescriptionService.doesAppointmentExist(
+        `${appointmentId}`,
+        doctorId,
+      );
+
+    if (!appointmentExists) {
+      throw new BadRequestException(
+        `Appointment with ID ${appointmentId} does not exist.`,
+      );
     }
 
     return await this.prescriptionService.updatePrescription(id, {
