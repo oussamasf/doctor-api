@@ -12,6 +12,7 @@ export const globalErrorMessages = {
   PASSWORD_TOO_SHORT:
     'Password must be minimum 8 characters long and contain at least one letter and one number',
   PASSWORDS_DO_NOT_MATCH: 'Passwords do not match',
+  INVALID_PHONE_NUMBER: 'INVALID_PHONE_NUMBER',
 };
 
 export const doctorErrorMessages = {
@@ -28,4 +29,8 @@ export const appointmentErrorMessages = {
     'APPOINTMENT_DATE_TIME_MUST_BE_IN_FUTURE',
   APPOINTMENT_ALREADY_SCHEDULED_FOR_THIS_TIME:
     'APPOINTMENT_ALREADY_SCHEDULED_FOR_THIS_TIME',
+};
+
+export const prescriptionErrorMessages = {
+  PRESCRIPTION_NOT_FOUND: 'PRESCRIPTION_NOT_FOUND',
 };
