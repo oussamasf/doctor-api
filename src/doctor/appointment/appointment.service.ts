@@ -100,8 +100,17 @@ export class AppointmentService {
    * @param {string} patientId - The ID of the patient whose appointments to retrieve.
    * @returns {Promise<Appointment[]>} A Promise that resolves to an array of appointments.
    */
-  async getAppointmentsByPatientId(patientId: string): Promise<Appointment[]> {
-    return this.appointmentRepository.find({ patientId });
+  async getAppointmentByPatientId(
+    _id: string,
+    patientId: string,
+  ): Promise<Appointment> {
+    const item = await this.appointmentRepository.findOne({ _id, patientId });
+    if (!item) {
+      throw new NotFoundException(
+        `Appointment with ID ${_id} made by ${patientId} not found`,
+      );
+    }
+    return item;
   }
 
   /**

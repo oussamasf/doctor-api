@@ -27,5 +27,6 @@ import { DoctorProfileModule } from '../profile/doctor.profile.module';
   ],
   controllers: [AppointmentController],
   providers: [AppointmentService, AppointmentRepository],
+  exports: [AppointmentService, AppointmentRepository],
 })
 export class AppointmentModule {}
