@@ -28,6 +28,7 @@ import {
   UpdateDoctorDto,
 } from '../dto';
 import { QueryParamsDto } from 'src/common/dto';
+import { isPasswordReused } from 'utils/password';
 
 /**
  * Injectable service class for managing doctor authentication.
@@ -272,20 +273,17 @@ export class DoctorProfileService {
     password: string,
     userId: string,
   ): Promise<Doctor> {
-    const staff = (await this.doctorProfileRepository.findOne({
+    const user = (await this.doctorProfileRepository.findOne({
       email,
     })) as Doctor & {
       _id: Types.ObjectId;
     };
-    if (!staff || staff._id.toString() !== userId)
+    if (!user || user._id.toString() !== userId)
       throw new NotFoundException(
         globalErrorMessages.YOU_ARE_NOT_AUTHORIZED_TO_PERFORM_THIS_ACTION,
       );
 
-    const isUsedPassword = await this._isPasswordReused(
-      password,
-      staff.password,
-    );
+    const isUsedPassword = await isPasswordReused(password, user.password);
 
     if (isUsedPassword) {
       throw new BadRequestException(
@@ -302,16 +300,5 @@ export class DoctorProfileService {
       { email },
       { password: hashedPassword },
     );
-  }
-
-  /**
-   * Check if the password has been used recently
-   */
-  private async _isPasswordReused(
-    newPassword: string,
-    oldPassword: string,
-  ): Promise<boolean> {
-    if (await bcrypt.compare(newPassword, oldPassword)) return true;
-    return false;
   }
 }

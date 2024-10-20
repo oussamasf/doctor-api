@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-
+import { Types } from 'mongoose';
 // DB actor
 import { PatientProfileRepository } from './repository/patient.profile.repository';
 
@@ -24,6 +28,7 @@ import {
   SortQueryPatientDto,
   UpdatePatientDto,
 } from 'src/patient/dto';
+import { isPasswordReused } from 'utils/password';
 
 /**
  * Injectable service class for managing patient authentication.
@@ -253,5 +258,47 @@ export class PatientProfileService {
    */
   async delete(_id: string): Promise<Patient> {
     return await this.patientProfileRepository.deleteById(_id);
+  }
+
+  /**
+   * Resets the password for a patient by updating the password hash in the database.
+   *
+   * @param email - The email of the patient for whom the password is being reset.
+   * @param password - The new password for the patient.
+   * @param userId - The unique identifier of the patient requesting the password reset.
+   * @returns A promise that resolves to the updated patient object with the new password.
+   */
+  async resetPassword(
+    email: string,
+    password: string,
+    userId: string,
+  ): Promise<Patient> {
+    const user = (await this.patientProfileRepository.findOne({
+      email,
+    })) as Patient & {
+      _id: Types.ObjectId;
+    };
+    if (!user || user._id.toString() !== userId)
+      throw new NotFoundException(
+        globalErrorMessages.YOU_ARE_NOT_AUTHORIZED_TO_PERFORM_THIS_ACTION,
+      );
+
+    const isUsedPassword = await isPasswordReused(password, user.password);
+
+    if (isUsedPassword) {
+      throw new BadRequestException(
+        globalErrorMessages.PASSWORD_HAS_BEEN_USED_RECENTLY,
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      password,
+      parseInt(`${this.configService.get('CRYPTO_SALT_ROUNDS')}`),
+    );
+
+    return await this.patientProfileRepository.findOneAndUpdate(
+      { email },
+      { password: hashedPassword },
+    );
   }
 }

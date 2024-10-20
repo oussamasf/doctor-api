@@ -21,6 +21,7 @@ import { globalErrorMessages } from '../../common/constants/errorMessages';
 import { AccessToken, LoginRes } from '../../common/types';
 
 import { Types } from 'mongoose';
+import { isPasswordReused } from 'utils/password';
 /**
  * Service responsible for managing administrative admin accounts and authentication.
  */
@@ -249,10 +250,7 @@ export class AdministrativeService {
         globalErrorMessages.YOU_ARE_NOT_AUTHORIZED_TO_PERFORM_THIS_ACTION,
       );
 
-    const isUsedPassword = await this._isPasswordReused(
-      password,
-      staff.password,
-    );
+    const isUsedPassword = await isPasswordReused(password, staff.password);
 
     if (isUsedPassword) {
       throw new BadRequestException(
@@ -269,16 +267,5 @@ export class AdministrativeService {
       { email },
       { password: hashedPassword },
     );
-  }
-
-  /**
-   * Check if the password has been used recently
-   */
-  private async _isPasswordReused(
-    newPassword: string,
-    oldPassword: string,
-  ): Promise<boolean> {
-    if (await bcrypt.compare(newPassword, oldPassword)) return true;
-    return false;
   }
 }
