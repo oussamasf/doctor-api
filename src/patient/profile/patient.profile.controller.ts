@@ -23,6 +23,7 @@ import { LoginDto } from './dto';
 // Constants
 import AUTH_GUARD from '../../common/constants/authGuards';
 import { LoginRes } from 'src/common/types';
+import { ResetPasswordDto } from 'src/common/dto/reset-password.dto';
 
 //? Controller class
 @Controller()
@@ -76,9 +77,30 @@ export class PatientAuthController {
    * @returns A Promise that resolves to updated authentication tokens.
    */
   @Version('1')
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
+  @UseGuards(AuthGuard(AUTH_GUARD.REFRESH_TOKEN_PATIENT))
   @Get('/refresh')
   async refresh(@Req() req: any) {
     return await this.patientProfileService.refresh(req.user);
+  }
+
+  /**
+   * Endpoint to reset the password of a patient.
+   * @param resetPasswordDto - The ResetPasswordDto containing the new password and the email of the patient.
+   * @param req - The HTTP request object.
+   * @returns A Promise that resolves to the updated patient object with the new password.
+   */
+  @Version('1')
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
+  @Post('/reset-password')
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+    @Req() req: any,
+  ) {
+    const { password, email } = resetPasswordDto;
+    return await this.patientProfileService.resetPassword(
+      email,
+      password,
+      req.user.id,
+    );
   }
 }
