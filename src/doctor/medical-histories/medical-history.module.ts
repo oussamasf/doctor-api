@@ -16,17 +16,13 @@ import {
   MedicalHistory,
   MedicalHistorySchema,
 } from './schemas/medical-history.schema';
-import { PatientProfileModule } from 'src/patient/profile/patient.profile.module';
-import { DoctorProfileModule } from '../profile/doctor.profile.module';
+
 import { AppointmentModule } from '../appointment/appointment.module';
-import { PrescriptionModule } from '../prescriptions/prescription.module';
 
 @Module({
   imports: [
     ConfigModule,
-    PatientProfileModule,
-    DoctorProfileModule,
-    PrescriptionModule,
+
     MongooseModule.forFeature([
       { name: MedicalHistory.name, schema: MedicalHistorySchema },
     ]),

@@ -38,4 +38,6 @@ export const prescriptionErrorMessages = {
 
 export const medicalHistoryErrorMessages = {
   MEDICAL_HISTORY_NOT_FOUND: 'MEDICAL_HISTORY_NOT_FOUND',
+  MEDICAL_HISTORY_RECORD_ALREADY_EXISTS:
+    'MEDICAL_HISTORY_RECORD_ALREADY_EXISTS',
 };

@@ -266,6 +266,12 @@ export class AppointmentService {
     return item;
   }
 
+  /**
+   * Establishes lazy references to the doctor and patient repositories.
+   * If the doctor repository is not already loaded, it loads the DoctorProfileModule
+   * and initializes the doctor repository. If the patient repository is not already loaded,
+   * it loads the PatientProfileModule and initializes the patient repository.
+   */
   private async _establishLazyService() {
     if (!this.doctorRepository) {
       const moduleRef = await this.lazyModuleLoader.load(
