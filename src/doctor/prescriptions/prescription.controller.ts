@@ -163,7 +163,7 @@ export class PrescriptionController {
   })
   @Patch(':id')
   async updatePrescription(
-    @Param('id') id: string,
+    @Param() { id }: IdParamsDto,
     @Body() updatePrescriptionDto: UpdatePrescriptionByDoctorDto,
     @Req() req: any,
   ) {

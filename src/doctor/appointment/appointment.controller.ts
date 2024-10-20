@@ -164,7 +164,7 @@ export class AppointmentController {
   })
   @Patch(':id')
   async updateAppointment(
-    @Param('id') id: string,
+    @Param() { id }: IdParamsDto,
     @Body() updateAppointmentDto: UpdateAppointmentByDoctorDto,
     @Req() req: any,
   ) {
