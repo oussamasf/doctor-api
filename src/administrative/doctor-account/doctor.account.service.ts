@@ -91,9 +91,11 @@ export class DoctorRegistryServices {
    * first request to the DoctorRegistryController.
    */
   private async _establishLazyService() {
-    const moduleRef = await this.lazyModuleLoader.load(
-      () => DoctorProfileModule,
-    );
-    this.doctorService = moduleRef.get(DoctorProfileService);
+    if (!this.doctorService) {
+      const moduleRef = await this.lazyModuleLoader.load(
+        () => DoctorProfileModule,
+      );
+      this.doctorService = moduleRef.get(DoctorProfileService);
+    }
   }
 }

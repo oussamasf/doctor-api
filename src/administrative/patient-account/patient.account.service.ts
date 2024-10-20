@@ -87,10 +87,17 @@ export class PatientRegistryServices {
     return await this.patientService.delete(_id);
   }
 
+  /**
+   * Establishes a lazy reference to the PatientProfileService.
+   *
+   * Loads the PatientProfileModule lazily and retrieves the PatientProfileService from the module reference.
+   */
   private async _establishLazyService() {
-    const moduleRef = await this.lazyModuleLoader.load(
-      () => PatientProfileModule,
-    );
-    this.patientService = moduleRef.get(PatientProfileService);
+    if (!this.patientService) {
+      const moduleRef = await this.lazyModuleLoader.load(
+        () => PatientProfileModule,
+      );
+      this.patientService = moduleRef.get(PatientProfileService);
+    }
   }
 }
