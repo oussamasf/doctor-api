@@ -11,6 +11,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { MatchPasswords } from 'src/common/decorators/matchPassword.decorator';
+import { globalErrorMessages } from 'src/common/constants/errorMessages';
 
 export class CreatePatientDto {
   @IsString()
@@ -24,15 +25,16 @@ export class CreatePatientDto {
   @IsNotEmpty()
   @MinLength(8)
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, {
-    message:
-      'Password must be at least 8 characters long and contain one letter and one number',
+    message: globalErrorMessages.PASSWORD_TOO_SHORT,
   })
   @ApiProperty({ description: 'Password for the patient' })
   password: string;
 
   @IsString()
   @IsNotEmpty()
-  @MatchPasswords('password', { message: 'Passwords do not match' })
+  @MatchPasswords('password', {
+    message: globalErrorMessages.PASSWORDS_DO_NOT_MATCH,
+  })
   @ApiProperty()
   confirmPassword: string;
 

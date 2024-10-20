@@ -1,8 +1,12 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-
+import { Types } from 'mongoose';
 // DB actor
 import { DoctorProfileRepository } from './repository/doctor.profile.repository';
 
@@ -24,6 +28,7 @@ import {
   UpdateDoctorDto,
 } from '../dto';
 import { QueryParamsDto } from 'src/common/dto';
+import { isPasswordReused } from 'utils/password';
 
 /**
  * Injectable service class for managing doctor authentication.
@@ -217,22 +222,6 @@ export class DoctorProfileService {
   }
 
   /**
-   * Creates multiple doctors at once.
-   * @param createMovieDto Array of doctor details to be created.
-   * @returns Promise that resolves to an array of created doctors.
-   */
-  async createMultiple(createDoctorDto: CreateDoctorDto[]): Promise<Doctor[]> {
-    let results;
-    try {
-      results =
-        await this.doctorProfileRepository.createMultiple(createDoctorDto);
-    } catch (error) {
-      throw new ConflictException('already seeded');
-    }
-    return results;
-  }
-
-  /**
    * Retrieves a single doctor information entry by its unique id (_idNumber) and throws a "Not Found" exception if not found.
    *
    * @param {string} _id - The unique id of the doctor information entry to find.
@@ -269,5 +258,47 @@ export class DoctorProfileService {
    */
   async delete(_id: string): Promise<Doctor> {
     return await this.doctorProfileRepository.deleteById(_id);
+  }
+
+  /**
+   * Resets the password for a doctor by updating the password hash in the database.
+   *
+   * @param email - The email of the doctor for whom the password is being reset.
+   * @param password - The new password for the doctor.
+   * @param userId - The unique identifier of the doctor requesting the password reset.
+   * @returns A promise that resolves to the updated doctor object with the new password.
+   */
+  async resetPassword(
+    email: string,
+    password: string,
+    userId: string,
+  ): Promise<Doctor> {
+    const user = (await this.doctorProfileRepository.findOne({
+      email,
+    })) as Doctor & {
+      _id: Types.ObjectId;
+    };
+    if (!user || user._id.toString() !== userId)
+      throw new NotFoundException(
+        globalErrorMessages.YOU_ARE_NOT_AUTHORIZED_TO_PERFORM_THIS_ACTION,
+      );
+
+    const isUsedPassword = await isPasswordReused(password, user.password);
+
+    if (isUsedPassword) {
+      throw new BadRequestException(
+        globalErrorMessages.PASSWORD_HAS_BEEN_USED_RECENTLY,
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      password,
+      parseInt(`${this.configService.get('CRYPTO_SALT_ROUNDS')}`),
+    );
+
+    return await this.doctorProfileRepository.findOneAndUpdate(
+      { email },
+      { password: hashedPassword },
+    );
   }
 }

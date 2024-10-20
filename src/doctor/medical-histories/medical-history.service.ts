@@ -13,6 +13,7 @@ import { DoctorProfileRepository } from '../profile/repository/doctor.profile.re
 import { PatientProfileRepository } from 'src/patient/profile/repository/patient.profile.repository';
 import { PrescriptionRepository } from '../prescriptions/repository/prescription.repository';
 import { FilterQuery } from 'mongoose';
+import { medicalHistoryErrorMessages } from 'src/common/constants/errorMessages';
 
 @Injectable()
 export class MedicalHistoryService {
@@ -54,7 +55,9 @@ export class MedicalHistoryService {
   async getMedicalHistoryById(_id: string): Promise<MedicalHistory> {
     const item = await this.medicalHistoryRepository.findOne({ _id });
     if (!item) {
-      throw new NotFoundException(`MedicalHistory with ID ${_id} not found`);
+      throw new NotFoundException(
+        medicalHistoryErrorMessages.MEDICAL_HISTORY_NOT_FOUND,
+      );
     }
     return item;
   }
@@ -88,7 +91,9 @@ export class MedicalHistoryService {
       updateMedicalHistoryDto,
     );
     if (!item) {
-      throw new NotFoundException(`MedicalHistory with ID ${id} not found`);
+      throw new NotFoundException(
+        medicalHistoryErrorMessages.MEDICAL_HISTORY_NOT_FOUND,
+      );
     }
     return item;
   }
@@ -102,7 +107,9 @@ export class MedicalHistoryService {
   async deleteMedicalHistory(id: string): Promise<MedicalHistory> {
     const item = await this.medicalHistoryRepository.deleteById(id);
     if (!item) {
-      throw new NotFoundException(`MedicalHistory with ID ${id} not found`);
+      throw new NotFoundException(
+        medicalHistoryErrorMessages.MEDICAL_HISTORY_NOT_FOUND,
+      );
     }
     return item;
   }
@@ -122,7 +129,7 @@ export class MedicalHistoryService {
     });
     if (!item) {
       throw new NotFoundException(
-        `MedicalHistory with ID ${_id} made by ${patientId} not found`,
+        medicalHistoryErrorMessages.MEDICAL_HISTORY_NOT_FOUND,
       );
     }
     return item;

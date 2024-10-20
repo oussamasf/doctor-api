@@ -13,6 +13,7 @@ import { DoctorProfileRepository } from '../profile/repository/doctor.profile.re
 import { PatientProfileRepository } from 'src/patient/profile/repository/patient.profile.repository';
 import { addDays, getYYYYMMDD } from 'utils/time';
 import { Types } from 'mongoose';
+import { appointmentErrorMessages } from 'src/common/constants/errorMessages';
 
 @Injectable()
 export class AppointmentService {
@@ -42,7 +43,9 @@ export class AppointmentService {
   async getAppointmentById(_id: string): Promise<Appointment> {
     const item = await this.appointmentRepository.findOne({ _id });
     if (!item) {
-      throw new NotFoundException(`Appointment with ID ${_id} not found`);
+      throw new NotFoundException(
+        appointmentErrorMessages.APPOINTMENT_NOT_FOUND,
+      );
     }
     return item;
   }
@@ -76,7 +79,9 @@ export class AppointmentService {
       updateAppointmentDto,
     );
     if (!item) {
-      throw new NotFoundException(`Appointment with ID ${id} not found`);
+      throw new NotFoundException(
+        appointmentErrorMessages.APPOINTMENT_NOT_FOUND,
+      );
     }
     return item;
   }
@@ -90,7 +95,9 @@ export class AppointmentService {
   async deleteAppointment(id: string): Promise<Appointment> {
     const item = await this.appointmentRepository.deleteById(id);
     if (!item) {
-      throw new NotFoundException(`Appointment with ID ${id} not found`);
+      throw new NotFoundException(
+        appointmentErrorMessages.APPOINTMENT_NOT_FOUND,
+      );
     }
     return item;
   }
@@ -107,7 +114,7 @@ export class AppointmentService {
     const item = await this.appointmentRepository.findOne({ _id, patientId });
     if (!item) {
       throw new NotFoundException(
-        `Appointment with ID ${_id} made by ${patientId} not found`,
+        appointmentErrorMessages.APPOINTMENT_NOT_FOUND,
       );
     }
     return item;
@@ -196,7 +203,7 @@ export class AppointmentService {
     );
     if (!item) {
       throw new NotFoundException(
-        `Appointment with ID ${id} made by ${doctorId} not found`,
+        appointmentErrorMessages.APPOINTMENT_NOT_FOUND,
       );
     }
     return item;

@@ -11,7 +11,9 @@ export const globalErrorMessages = {
   PASSWORD_HAS_BEEN_USED_RECENTLY: 'PASSWORD_HAS_BEEN_USED_RECENTLY',
   PASSWORD_TOO_SHORT:
     'Password must be minimum 8 characters long and contain at least one letter and one number',
-  PASSWORDS_DO_NOT_MATCH: 'Passwords do not match',
+  PASSWORDS_DO_NOT_MATCH: 'PASSWORDS_DO_NOT_MATCH',
+  INVALID_PHONE_NUMBER: 'INVALID_PHONE_NUMBER',
+  END_DATE_MUST_BE_AFTER_START_DATE: 'END_DATE_MUST_BE_AFTER_START_DATE',
 };
 
 export const doctorErrorMessages = {
@@ -20,4 +22,20 @@ export const doctorErrorMessages = {
 
 export const patientErrorMessages = {
   PATIENT_NOT_FOUND: 'PATIENT_NOT_FOUND',
+};
+
+export const appointmentErrorMessages = {
+  APPOINTMENT_NOT_FOUND: 'APPOINTMENT_NOT_FOUND',
+  APPOINTMENT_DATE_TIME_MUST_BE_IN_FUTURE:
+    'APPOINTMENT_DATE_TIME_MUST_BE_IN_FUTURE',
+  APPOINTMENT_ALREADY_SCHEDULED_FOR_THIS_TIME:
+    'APPOINTMENT_ALREADY_SCHEDULED_FOR_THIS_TIME',
+};
+
+export const prescriptionErrorMessages = {
+  PRESCRIPTION_NOT_FOUND: 'PRESCRIPTION_NOT_FOUND',
+};
+
+export const medicalHistoryErrorMessages = {
+  MEDICAL_HISTORY_NOT_FOUND: 'MEDICAL_HISTORY_NOT_FOUND',
 };

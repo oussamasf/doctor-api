@@ -28,6 +28,10 @@ import {
   SortQueryAppointmentDto,
   UpdateAppointmentByDoctorDto,
 } from './dto';
+import {
+  appointmentErrorMessages,
+  patientErrorMessages,
+} from 'src/common/constants/errorMessages';
 
 /**
  * Controller responsible for handling HTTP requests related to appointments.
@@ -69,9 +73,7 @@ export class AppointmentController {
     );
 
     if (!patientExists) {
-      throw new BadRequestException(
-        `Patient with ID ${patientId} does not exist.`,
-      );
+      throw new BadRequestException(patientErrorMessages.PATIENT_NOT_FOUND);
     }
 
     //? Validate that the appointment date is not in the past
@@ -79,7 +81,7 @@ export class AppointmentController {
 
     if (date < currentDateTime) {
       throw new BadRequestException(
-        'Appointment date and time must be in the future.',
+        appointmentErrorMessages.APPOINTMENT_DATE_TIME_MUST_BE_IN_FUTURE,
       );
     }
 
@@ -93,7 +95,7 @@ export class AppointmentController {
       );
     if (isConflicting) {
       throw new BadRequestException(
-        'There is already an appointment scheduled for this time.',
+        appointmentErrorMessages.APPOINTMENT_ALREADY_SCHEDULED_FOR_THIS_TIME,
       );
     }
 
@@ -172,9 +174,7 @@ export class AppointmentController {
         `${patientId}`,
       );
       if (!patientExists) {
-        throw new BadRequestException(
-          `Patient with ID ${patientId} does not exist.`,
-        );
+        throw new BadRequestException(patientErrorMessages.PATIENT_NOT_FOUND);
       }
     }
 
@@ -183,7 +183,7 @@ export class AppointmentController {
 
       if (date < currentDateTime) {
         throw new BadRequestException(
-          'Appointment date must be in the future.',
+          appointmentErrorMessages.APPOINTMENT_DATE_TIME_MUST_BE_IN_FUTURE,
         );
       }
     }
@@ -200,7 +200,7 @@ export class AppointmentController {
         );
       if (isConflicting) {
         throw new BadRequestException(
-          'There is already an appointment scheduled for this time.',
+          appointmentErrorMessages.APPOINTMENT_ALREADY_SCHEDULED_FOR_THIS_TIME,
         );
       }
     }

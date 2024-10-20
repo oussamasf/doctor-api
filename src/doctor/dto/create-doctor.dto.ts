@@ -7,6 +7,7 @@ import {
   IsEmail,
   MaxLength,
 } from 'class-validator';
+import { globalErrorMessages } from 'src/common/constants/errorMessages';
 import { MatchPasswords } from 'src/common/decorators/matchPassword.decorator';
 
 export class CreateDoctorDto {
@@ -29,7 +30,7 @@ export class CreateDoctorDto {
 
   @IsString()
   @Matches(/^\+?[1-9]\d{1,14}$/, {
-    message: 'Phone number must be a valid number with optional + prefix',
+    message: globalErrorMessages.INVALID_PHONE_NUMBER,
   })
   @ApiProperty()
   phoneNumber: string;
@@ -37,15 +38,16 @@ export class CreateDoctorDto {
   @IsString()
   @MinLength(8)
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, {
-    message:
-      'Password must be minimum 8 characters long and contain at least one letter and one number',
+    message: globalErrorMessages.PASSWORDS_DO_NOT_MATCH,
   })
   @ApiProperty()
   password: string;
 
   @IsString()
   @IsNotEmpty()
-  @MatchPasswords('password', { message: 'Passwords do not match' })
+  @MatchPasswords('password', {
+    message: globalErrorMessages.PASSWORDS_DO_NOT_MATCH,
+  })
   @ApiProperty()
   confirmPassword: string;
 

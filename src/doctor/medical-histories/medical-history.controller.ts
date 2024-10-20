@@ -29,6 +29,11 @@ import {
   SortQueryMedicalHistoryDto,
   UpdateMedicalHistoryByDoctorDto,
 } from './dto';
+import {
+  globalErrorMessages,
+  patientErrorMessages,
+  prescriptionErrorMessages,
+} from 'src/common/constants/errorMessages';
 
 /**
  * Controller responsible for handling HTTP requests related to medicalHistories.
@@ -79,9 +84,7 @@ export class MedicalHistoryController {
     );
 
     if (!patientExists) {
-      throw new BadRequestException(
-        `Patient with ID ${patientId} does not exist.`,
-      );
+      throw new BadRequestException(patientErrorMessages.PATIENT_NOT_FOUND);
     }
 
     const prescriptionExists =
@@ -91,7 +94,7 @@ export class MedicalHistoryController {
       );
     if (!prescriptionExists) {
       throw new BadRequestException(
-        `Prescription with ID ${prescriptionId} does not exist.`,
+        prescriptionErrorMessages.PRESCRIPTION_NOT_FOUND,
       );
     }
 
@@ -101,7 +104,9 @@ export class MedicalHistoryController {
     });
 
     if (!item) {
-      throw new InternalServerErrorException('Failed to create medicalHistory');
+      throw new InternalServerErrorException(
+        globalErrorMessages.SOMETHING_WENT_WRONG,
+      );
     }
 
     return item;
@@ -176,9 +181,7 @@ export class MedicalHistoryController {
         `${patientId}`,
       );
       if (!patientExists) {
-        throw new BadRequestException(
-          `Patient with ID ${patientId} does not exist.`,
-        );
+        throw new BadRequestException(patientErrorMessages.PATIENT_NOT_FOUND);
       }
     }
 
@@ -191,7 +194,7 @@ export class MedicalHistoryController {
 
       if (!prescriptionExists) {
         throw new BadRequestException(
-          `Prescription with ID ${prescriptionId} does not exist.`,
+          prescriptionErrorMessages.PRESCRIPTION_NOT_FOUND,
         );
       }
     }

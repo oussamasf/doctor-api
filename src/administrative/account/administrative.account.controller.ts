@@ -18,7 +18,7 @@ import { AdministrativeService } from './administrative.account.service';
 import { addStaff, loginSchema } from './constants/swagger';
 
 // DTOS
-import { CreateAdministrativeDto, ResetPasswordDto } from '../dto';
+import { CreateAdministrativeDto } from '../dto';
 import { LoginDto } from './dto';
 
 //Guards
@@ -30,6 +30,7 @@ import AUTH_GUARD from '../../common/constants/authGuards';
 import { Staff } from './schemas/administrative.schema';
 import { LoginRes } from 'src/common/types';
 import { ADMINISTRATIVE_ROLES } from './constants/roles';
+import { ResetPasswordDto } from 'src/common/dto/reset-password.dto';
 
 /**
  * Controller handling authentication and management of administrative accounts.
