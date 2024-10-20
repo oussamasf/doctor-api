@@ -37,16 +37,22 @@ export class Patient {
   @Prop()
   address?: string;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId }] })
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' }] })
   doctors?: Types.ObjectId[];
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId }] })
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Appointment' }],
+  })
   appointments?: Types.ObjectId[];
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId }] })
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Prescription' }],
+  })
   prescriptions?: Types.ObjectId[];
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId }] })
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MedicalHistory' }],
+  })
   medicalHistory?: Types.ObjectId[];
 
   @Prop()

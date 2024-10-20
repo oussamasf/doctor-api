@@ -22,7 +22,32 @@ export class PatientProfileRepository {
    * @returns A promise that resolves to the found patient.
    */
   async findOne(userFilterQuery: FilterQuery<Patient>): Promise<Patient> {
-    return this.patientModel.findOne(userFilterQuery);
+    const populateDoctor = {
+      path: 'doctorId',
+      select: 'lastName specialization',
+    };
+    const options = { sort: { date: -1 }, limit: 5 };
+
+    return this.patientModel
+      .findOne(userFilterQuery)
+      .populate({
+        path: 'appointments',
+        select: 'date status doctorId',
+        options,
+        populate: populateDoctor,
+      })
+      .populate({
+        path: 'prescriptions',
+        select: 'medications startDate endDate doctorId ',
+        options,
+        populate: populateDoctor,
+      })
+      .populate({
+        path: 'medicalHistory',
+        select: 'diagnosis treatment date doctorId notes',
+        options,
+        populate: populateDoctor,
+      });
   }
 
   /**
