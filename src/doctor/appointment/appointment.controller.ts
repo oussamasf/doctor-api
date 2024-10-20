@@ -79,7 +79,7 @@ export class AppointmentController {
     //? Validate that the appointment date is not in the past
     const currentDateTime = new Date();
 
-    if (date < currentDateTime) {
+    if (new Date(date).getTime() < currentDateTime.getTime()) {
       throw new BadRequestException(
         appointmentErrorMessages.APPOINTMENT_DATE_TIME_MUST_BE_IN_FUTURE,
       );
@@ -181,7 +181,7 @@ export class AppointmentController {
     if (date) {
       const currentDateTime = new Date();
 
-      if (date < currentDateTime) {
+      if (new Date(date).getTime() < currentDateTime.getTime()) {
         throw new BadRequestException(
           appointmentErrorMessages.APPOINTMENT_DATE_TIME_MUST_BE_IN_FUTURE,
         );
