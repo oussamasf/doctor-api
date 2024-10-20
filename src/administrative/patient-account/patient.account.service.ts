@@ -11,10 +11,14 @@ import {
 } from 'src/patient/dto';
 import { Patient } from 'src/patient/profile/schemas/patient.schema';
 import { PatientProfileService } from 'src/patient/profile/patient.profile.service';
+import { LazyModuleLoader } from '@nestjs/core';
+import { PatientProfileModule } from 'src/patient/profile/patient.profile.module';
 
 @Injectable()
 export class PatientRegistryServices {
-  constructor(private readonly patientService: PatientProfileService) {}
+  private patientService?: PatientProfileService;
+
+  constructor(private readonly lazyModuleLoader: LazyModuleLoader) {}
 
   /**
    * Find and retrieve a list of patients based on query parameters.
@@ -29,6 +33,8 @@ export class PatientRegistryServices {
     search: SearchQueryPatientDto,
     sort: SortQueryPatientDto,
   ): Promise<FindAllReturn<Patient>> {
+    await this._establishLazyService();
+
     return await this.patientService.findAll(query, search, sort);
   }
 
@@ -39,6 +45,8 @@ export class PatientRegistryServices {
    * @returns A promise that resolves to the patient object if found.
    */
   async findOne(_id: string) {
+    await this._establishLazyService();
+
     return await this.patientService.findOneWithException(_id);
   }
 
@@ -50,6 +58,8 @@ export class PatientRegistryServices {
    */
   // TODO handle duplicated keys
   async create(createPatientDto: CreatePatientDto) {
+    await this._establishLazyService();
+
     return await this.patientService.create(createPatientDto);
   }
 
@@ -61,6 +71,8 @@ export class PatientRegistryServices {
    * @returns A promise that resolves to the updated patient account.
    */
   async update(_id: string, updatePatientDto: UpdatePatientDto) {
+    await this._establishLazyService();
+
     return await this.patientService.update(_id, updatePatientDto);
   }
 
@@ -71,6 +83,21 @@ export class PatientRegistryServices {
    * @returns A promise that resolves to the deleted patient account.
    */
   async delete(_id: string) {
+    await this._establishLazyService();
     return await this.patientService.delete(_id);
+  }
+
+  /**
+   * Establishes a lazy reference to the PatientProfileService.
+   *
+   * Loads the PatientProfileModule lazily and retrieves the PatientProfileService from the module reference.
+   */
+  private async _establishLazyService() {
+    if (!this.patientService) {
+      const moduleRef = await this.lazyModuleLoader.load(
+        () => PatientProfileModule,
+      );
+      this.patientService = moduleRef.get(PatientProfileService);
+    }
   }
 }

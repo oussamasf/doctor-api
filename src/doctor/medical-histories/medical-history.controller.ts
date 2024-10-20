@@ -31,6 +31,7 @@ import {
 } from './dto';
 import {
   globalErrorMessages,
+  medicalHistoryErrorMessages,
   patientErrorMessages,
   prescriptionErrorMessages,
 } from 'src/common/constants/errorMessages';
@@ -69,12 +70,13 @@ export class MedicalHistoryController {
     const { patientId, prescriptionId } = createMedicalHistoryDto;
     const doctorId = req.user.id;
 
-    const uniquePrescription = await this.medicalHistoryService.findOne({
-      prescriptionId,
-    });
-    if (uniquePrescription) {
+    const uniquePrescriptionPerMedicalHistory =
+      await this.medicalHistoryService.findOne({
+        prescriptionId,
+      });
+    if (uniquePrescriptionPerMedicalHistory) {
       throw new BadRequestException(
-        `Prescription with ID ${prescriptionId} already exists.`,
+        medicalHistoryErrorMessages.MEDICAL_HISTORY_RECORD_ALREADY_EXISTS,
       );
     }
 
@@ -168,7 +170,7 @@ export class MedicalHistoryController {
   })
   @Patch(':id')
   async updateMedicalHistory(
-    @Param('id') id: string,
+    @Param() { id }: IdParamsDto,
     @Body() updateMedicalHistoryDto: UpdateMedicalHistoryByDoctorDto,
     @Req() req: any,
   ) {

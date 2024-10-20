@@ -25,14 +25,19 @@ import {
   prescriptionErrorMessages,
 } from 'src/common/constants/errorMessages';
 import { Types } from 'mongoose';
+import { LazyModuleLoader } from '@nestjs/core';
+import { DoctorProfileModule } from '../profile/doctor.profile.module';
+import { PatientProfileModule } from 'src/patient/profile/patient.profile.module';
+import { AppointmentModule } from '../appointment/appointment.module';
 
 @Injectable()
 export class PrescriptionService {
+  private patientRepository: PatientProfileRepository;
+  private doctorRepository: DoctorProfileRepository;
+  private appointmentRepository: AppointmentRepository;
   constructor(
     private readonly prescriptionRepository: PrescriptionRepository,
-    private readonly patientRepository: PatientProfileRepository,
-    private readonly doctorRepository: DoctorProfileRepository,
-    private readonly appointmentRepository: AppointmentRepository,
+    private readonly lazyModuleLoader: LazyModuleLoader,
   ) {}
 
   /**
@@ -43,6 +48,8 @@ export class PrescriptionService {
   async createPrescription(
     createPrescriptionDto: CreatePrescriptionDto,
   ): Promise<Prescription> {
+    await this._establishLazyService();
+
     const item = (await this.prescriptionRepository.create(
       createPrescriptionDto,
     )) as Prescription & { _id: Types.ObjectId };
@@ -67,6 +74,8 @@ export class PrescriptionService {
    * @throws NotFoundException if the prescription is not found.
    */
   async getPrescriptionById(_id: string): Promise<Prescription> {
+    await this._establishLazyService();
+
     const item = await this.prescriptionRepository.findOne({ _id });
     if (!item) {
       throw new NotFoundException(
@@ -89,6 +98,8 @@ export class PrescriptionService {
     search: SearchQueryPrescriptionDto,
     sort: SortQueryPrescriptionDto,
   ): Promise<FindAllReturn<Prescription>> {
+    await this._establishLazyService();
+
     const { limit, skip } = query;
 
     const findQuery = { limit, skip, search, sort };
@@ -100,6 +111,8 @@ export class PrescriptionService {
     id: string,
     updatePrescriptionDto: UpdatePrescriptionDto,
   ): Promise<Prescription> {
+    await this._establishLazyService();
+
     const item = await this.prescriptionRepository.updateById(
       id,
       updatePrescriptionDto,
@@ -119,6 +132,8 @@ export class PrescriptionService {
    * @throws {NotFoundException} If the prescription with the given ID is not found.
    */
   async deletePrescription(id: string): Promise<Prescription> {
+    await this._establishLazyService();
+
     const item = await this.prescriptionRepository.deleteById(id);
     if (!item) {
       throw new NotFoundException(
@@ -137,6 +152,8 @@ export class PrescriptionService {
     _id: string,
     patientId: string,
   ): Promise<Prescription> {
+    await this._establishLazyService();
+
     const item = await this.prescriptionRepository.findOne({ _id, patientId });
     if (!item) {
       throw new NotFoundException(
@@ -152,6 +169,8 @@ export class PrescriptionService {
    * @returns {Promise<Prescription[]>} A Promise that resolves to an array of prescriptions.
    */
   async getPrescriptionsByDoctorId(doctorId: string): Promise<Prescription[]> {
+    await this._establishLazyService();
+
     return this.prescriptionRepository.find({ doctorId });
   }
 
@@ -162,6 +181,8 @@ export class PrescriptionService {
    * @returns {Promise<boolean>} A Promise that resolves to true if the doctor exists, false otherwise.
    */
   async doesDoctorExist(doctorId: string): Promise<boolean> {
+    await this._establishLazyService();
+
     const doctor = await this.doctorRepository.exists(doctorId);
     return !!doctor;
   }
@@ -173,6 +194,8 @@ export class PrescriptionService {
    * @returns {Promise<boolean>} A Promise that resolves to true if the patient exists, false otherwise.
    */
   async doesPatientExist(patientId: string): Promise<boolean> {
+    await this._establishLazyService();
+
     const patient = await this.patientRepository.exists(patientId);
     return !!patient;
   }
@@ -187,6 +210,8 @@ export class PrescriptionService {
     appointmentId: string,
     doctorId: string,
   ): Promise<boolean> {
+    await this._establishLazyService();
+
     const today = new Date();
     const startOfDay = new Date(
       today.getFullYear(),
@@ -227,6 +252,8 @@ export class PrescriptionService {
    * @returns {Promise<Appointment>} A Promise that resolves to the updated appointment.
    */
   async completeAppointment(appointmentId: string): Promise<Appointment> {
+    await this._establishLazyService();
+
     const item = await this.appointmentRepository.update(
       { _id: appointmentId },
       {
@@ -234,5 +261,35 @@ export class PrescriptionService {
       },
     );
     return item;
+  }
+
+  /**
+   * Establishes lazy references to the doctor, patient, and appointment repositories.
+   *
+   * If any of the repositories are not already loaded, it loads the corresponding
+   * module and initializes the repository. This is called upon the first request
+   * to the service.
+   */
+  private async _establishLazyService() {
+    if (!this.doctorRepository) {
+      const moduleRef = await this.lazyModuleLoader.load(
+        () => DoctorProfileModule,
+      );
+      this.doctorRepository = moduleRef.get(DoctorProfileRepository);
+    }
+
+    if (!this.patientRepository) {
+      const moduleRef = await this.lazyModuleLoader.load(
+        () => PatientProfileModule,
+      );
+      this.patientRepository = moduleRef.get(PatientProfileRepository);
+    }
+
+    if (!this.appointmentRepository) {
+      const moduleRef = await this.lazyModuleLoader.load(
+        () => AppointmentModule,
+      );
+      this.appointmentRepository = moduleRef.get(AppointmentRepository);
+    }
   }
 }

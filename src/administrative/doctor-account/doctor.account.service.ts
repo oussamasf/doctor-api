@@ -10,11 +10,14 @@ import {
   UpdateDoctorDto,
 } from 'src/doctor/dto';
 import { Doctor } from 'src/doctor/profile/schemas/doctor.schema';
+import { LazyModuleLoader } from '@nestjs/core';
+import { DoctorProfileModule } from 'src/doctor/profile/doctor.profile.module';
 import { DoctorProfileService } from 'src/doctor/profile/doctor.profile.service';
 
 @Injectable()
 export class DoctorRegistryServices {
-  constructor(private readonly doctorService: DoctorProfileService) {}
+  private doctorService?: DoctorProfileService;
+  constructor(private readonly lazyModuleLoader: LazyModuleLoader) {}
 
   /**
    * Find and retrieve a list of doctors based on query parameters.
@@ -24,11 +27,13 @@ export class DoctorRegistryServices {
    * @param sort - The sorting criteria for the retrieved doctors.
    * @returns A promise that resolves to a list of doctors matching the specified criteria.
    */
+
   async findAll(
     query: QueryParamsDto,
     search: SearchQueryDoctorDto,
     sort: SortQueryDoctorDto,
   ): Promise<FindAllReturn<Doctor>> {
+    await this._establishLazyService();
     return await this.doctorService.findAll(query, search, sort);
   }
 
@@ -39,6 +44,7 @@ export class DoctorRegistryServices {
    * @returns A promise that resolves to the doctor object if found.
    */
   async findOne(_id: string) {
+    await this._establishLazyService();
     return await this.doctorService.findOneWithException(_id);
   }
 
@@ -49,6 +55,7 @@ export class DoctorRegistryServices {
    * @returns A promise that resolves to the newly created doctor account.
    */
   async create(createDoctorDto: CreateDoctorDto) {
+    await this._establishLazyService();
     return await this.doctorService.create(createDoctorDto);
   }
 
@@ -60,6 +67,7 @@ export class DoctorRegistryServices {
    * @returns A promise that resolves to the updated doctor account.
    */
   async update(_id: string, updateDoctorDto: UpdateDoctorDto) {
+    await this._establishLazyService();
     return await this.doctorService.update(_id, updateDoctorDto);
   }
 
@@ -70,6 +78,24 @@ export class DoctorRegistryServices {
    * @returns A promise that resolves to the deleted doctor account.
    */
   async delete(_id: string) {
+    await this._establishLazyService();
     return await this.doctorService.delete(_id);
+  }
+
+  /**
+   * Establishes a lazy reference to the DoctorProfileService.
+   *
+   * Since this DoctorRegistryServices is in the administrative module, which is
+   * not dependent on the DoctorProfileModule, we need to use lazy loading to
+   * establish the reference to the DoctorProfileService. This is called upon the
+   * first request to the DoctorRegistryController.
+   */
+  private async _establishLazyService() {
+    if (!this.doctorService) {
+      const moduleRef = await this.lazyModuleLoader.load(
+        () => DoctorProfileModule,
+      );
+      this.doctorService = moduleRef.get(DoctorProfileService);
+    }
   }
 }

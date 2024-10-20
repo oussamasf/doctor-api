@@ -21,13 +21,18 @@ import {
   appointmentErrorMessages,
   globalErrorMessages,
 } from 'src/common/constants/errorMessages';
+import { LazyModuleLoader } from '@nestjs/core';
+import { DoctorProfileModule } from '../profile/doctor.profile.module';
+import { PatientProfileModule } from 'src/patient/profile/patient.profile.module';
 
 @Injectable()
 export class AppointmentService {
+  private patientRepository?: PatientProfileRepository;
+  private doctorRepository?: DoctorProfileRepository;
+
   constructor(
     private readonly appointmentRepository: AppointmentRepository,
-    private readonly patientRepository: PatientProfileRepository,
-    private readonly doctorRepository: DoctorProfileRepository,
+    private readonly lazyModuleLoader: LazyModuleLoader,
   ) {}
 
   /**
@@ -38,6 +43,8 @@ export class AppointmentService {
   async createAppointment(
     createAppointmentDto: CreateAppointmentDto,
   ): Promise<Appointment> {
+    await this._establishLazyService();
+
     const item = (await this.appointmentRepository.create(
       createAppointmentDto,
     )) as Appointment & { _id: Types.ObjectId };
@@ -65,6 +72,8 @@ export class AppointmentService {
    * @throws NotFoundException if the appointment is not found.
    */
   async getAppointmentById(_id: string): Promise<Appointment> {
+    await this._establishLazyService();
+
     const item = await this.appointmentRepository.findOne({ _id });
     if (!item) {
       throw new NotFoundException(
@@ -87,6 +96,8 @@ export class AppointmentService {
     search: SearchQueryAppointmentDto,
     sort: SortQueryAppointmentDto,
   ): Promise<FindAllReturn<Appointment>> {
+    await this._establishLazyService();
+
     const { limit, skip } = query;
 
     const findQuery = { limit, skip, search, sort };
@@ -117,6 +128,8 @@ export class AppointmentService {
    * @throws {NotFoundException} If the appointment with the given ID is not found.
    */
   async deleteAppointment(id: string): Promise<Appointment> {
+    await this._establishLazyService();
+
     const item = await this.appointmentRepository.deleteById(id);
     if (!item) {
       throw new NotFoundException(
@@ -135,6 +148,8 @@ export class AppointmentService {
     _id: string,
     patientId: string,
   ): Promise<Appointment> {
+    await this._establishLazyService();
+
     const item = await this.appointmentRepository.findOne({ _id, patientId });
     if (!item) {
       throw new NotFoundException(
@@ -152,6 +167,8 @@ export class AppointmentService {
   async getAppointmentsByAppointmentId(
     doctorId: string,
   ): Promise<Appointment[]> {
+    await this._establishLazyService();
+
     return this.appointmentRepository.find({ doctorId });
   }
 
@@ -162,6 +179,8 @@ export class AppointmentService {
    * @returns {Promise<boolean>} A Promise that resolves to true if the patient exists, false otherwise.
    */
   async doesPatientExist(patientId: string): Promise<boolean> {
+    await this._establishLazyService();
+
     const patient = await this.patientRepository.exists(patientId);
     return !!patient;
   }
@@ -173,6 +192,8 @@ export class AppointmentService {
    * @returns {Promise<boolean>} A Promise that resolves to true if the doctor exists, false otherwise.
    */
   async doesDoctorExist(doctorId: string): Promise<boolean> {
+    await this._establishLazyService();
+
     const doctor = await this.doctorRepository.exists(doctorId);
     return !!doctor;
   }
@@ -194,6 +215,8 @@ export class AppointmentService {
     time: string,
     id?: string,
   ): Promise<boolean> {
+    await this._establishLazyService();
+
     const patientConflicts = await this.appointmentRepository.find({
       _id: { $ne: id || new Types.ObjectId() },
       patientId,
@@ -218,7 +241,17 @@ export class AppointmentService {
     return patientConflicts.length > 0 || doctorConflicts.length > 0;
   }
 
+  /**
+   * Cancels an appointment by updating its status to CANCELLED.
+   *
+   * @param {string} id - The ID of the appointment to cancel.
+   * @param {string} doctorId - The ID of the doctor canceling the appointment.
+   * @returns {Promise<Appointment>} A Promise that resolves to the canceled appointment.
+   * @throws {NotFoundException} If the appointment is not found.
+   */
   async cancelAppointment(id: string, doctorId: string): Promise<Appointment> {
+    await this._establishLazyService();
+
     const item = await this.appointmentRepository.update(
       { _id: id, doctorId },
       {
@@ -231,5 +264,27 @@ export class AppointmentService {
       );
     }
     return item;
+  }
+
+  /**
+   * Establishes lazy references to the doctor and patient repositories.
+   * If the doctor repository is not already loaded, it loads the DoctorProfileModule
+   * and initializes the doctor repository. If the patient repository is not already loaded,
+   * it loads the PatientProfileModule and initializes the patient repository.
+   */
+  private async _establishLazyService() {
+    if (!this.doctorRepository) {
+      const moduleRef = await this.lazyModuleLoader.load(
+        () => DoctorProfileModule,
+      );
+      this.doctorRepository = moduleRef.get(DoctorProfileRepository);
+    }
+
+    if (!this.patientRepository) {
+      const moduleRef = await this.lazyModuleLoader.load(
+        () => PatientProfileModule,
+      );
+      this.patientRepository = moduleRef.get(PatientProfileRepository);
+    }
   }
 }

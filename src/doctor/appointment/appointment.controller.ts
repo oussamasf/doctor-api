@@ -171,8 +171,7 @@ export class AppointmentController {
     const { patientId, date } = updateAppointmentDto;
     const doctorId = req.user.id;
     const appointmentDate = new Date(date);
-    const time = `${appointmentDate.getHours().toString().padStart(2, '0')}:${appointmentDate.getMinutes().toString().padStart(2, '0')}:${appointmentDate.getSeconds().toString().padStart(2, '0')}`;
-
+    let time;
     //? Validate if patientId exists
     if (patientId) {
       const patientExists = await this.appointmentService.doesPatientExist(
@@ -184,6 +183,8 @@ export class AppointmentController {
     }
 
     if (date) {
+      time = `${appointmentDate.getHours().toString().padStart(2, '0')}:${appointmentDate.getMinutes().toString().padStart(2, '0')}:${appointmentDate.getSeconds().toString().padStart(2, '0')}`;
+
       const currentDateTime = new Date();
 
       if (appointmentDate.getTime() < currentDateTime.getTime()) {
