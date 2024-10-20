@@ -17,7 +17,7 @@ export class AdminsSeeder {
   ) {}
 
   async seed() {
-    const adminEmail = 'superadmin@clinic.com';
+    const adminEmail = process.env.SUPER_ADMIN_EMAIL;
     const adminExists = await this.staffModel
       .findOne({
         email: adminEmail,
@@ -25,7 +25,10 @@ export class AdminsSeeder {
       .exec();
 
     if (!adminExists) {
-      const hashedPassword = await bcrypt.hash('admin123', 10);
+      const hashedPassword = await bcrypt.hash(
+        process.env.SUPER_ADMIN_PASSWORD,
+        10,
+      );
 
       const adminUser = new this.staffModel({
         email: adminEmail,
