@@ -11,6 +11,11 @@ export class SearchQueryAppointmentDto {
 
   @IsString()
   @IsOptional()
+  @ApiProperty({ required: false, description: 'Search by username' })
+  patientId?: string;
+
+  @IsString()
+  @IsOptional()
   @ApiProperty({ required: false, description: 'Search by first name' })
   firstName?: string;
 

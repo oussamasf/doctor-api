@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { MedicalHistoryRepository } from './repository/medical-history.repository';
 import {
   CreateMedicalHistoryDto,
@@ -13,7 +17,11 @@ import { DoctorProfileRepository } from '../profile/repository/doctor.profile.re
 import { PatientProfileRepository } from 'src/patient/profile/repository/patient.profile.repository';
 import { PrescriptionRepository } from '../prescriptions/repository/prescription.repository';
 import { FilterQuery } from 'mongoose';
-import { medicalHistoryErrorMessages } from 'src/common/constants/errorMessages';
+import {
+  globalErrorMessages,
+  medicalHistoryErrorMessages,
+} from 'src/common/constants/errorMessages';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class MedicalHistoryService {
@@ -32,7 +40,21 @@ export class MedicalHistoryService {
   async createMedicalHistory(
     createMedicalHistoryDto: CreateMedicalHistoryDto,
   ): Promise<MedicalHistory> {
-    return this.medicalHistoryRepository.create(createMedicalHistoryDto);
+    const item = (await this.medicalHistoryRepository.create(
+      createMedicalHistoryDto,
+    )) as MedicalHistory & { _id: Types.ObjectId };
+
+    if (!item) {
+      throw new InternalServerErrorException(
+        globalErrorMessages.SOMETHING_WENT_WRONG,
+      );
+    }
+    await this.patientRepository.updateById(`${item.patientId}`, {
+      $push: {
+        medicalHistory: item._id,
+      },
+    });
+    return item;
   }
 
   /**

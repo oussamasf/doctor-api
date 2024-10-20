@@ -59,7 +59,7 @@ export class PrescriptionController {
     @SortQuery() sort: SortQueryPrescriptionDto,
     @Req() req: any,
   ) {
-    queryParams.query = { ...queryParams.query, patientId: req.user.id };
+    search = { ...search, patientId: req.user.id };
     return this.prescriptionService.findAll(queryParams, search, sort);
   }
 

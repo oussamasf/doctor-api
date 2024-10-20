@@ -26,5 +26,5 @@ export class CreateAppointmentDto {
 
 export class CreateAppointmentByDoctorDto extends OmitType(
   CreateAppointmentDto,
-  ['doctorId'] as const,
+  ['doctorId', 'time'] as const,
 ) {}

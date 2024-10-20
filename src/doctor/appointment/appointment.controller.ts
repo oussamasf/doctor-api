@@ -64,8 +64,10 @@ export class AppointmentController {
     @Body() createAppointmentDto: CreateAppointmentByDoctorDto,
     @Req() req: any,
   ) {
-    const { patientId, date, time } = createAppointmentDto;
+    const { patientId, date } = createAppointmentDto;
     const doctorId = req.user.id;
+    const appointmentDate = new Date(date);
+    const time = `${appointmentDate.getHours().toString().padStart(2, '0')}:${appointmentDate.getMinutes().toString().padStart(2, '0')}:${appointmentDate.getSeconds().toString().padStart(2, '0')}`;
 
     //? Validate Patient and Doctor existence
     const patientExists = await this.appointmentService.doesPatientExist(
@@ -79,7 +81,7 @@ export class AppointmentController {
     //? Validate that the appointment date is not in the past
     const currentDateTime = new Date();
 
-    if (date < currentDateTime) {
+    if (appointmentDate.getTime() < currentDateTime.getTime()) {
       throw new BadRequestException(
         appointmentErrorMessages.APPOINTMENT_DATE_TIME_MUST_BE_IN_FUTURE,
       );
@@ -101,6 +103,7 @@ export class AppointmentController {
 
     return await this.appointmentService.createAppointment({
       doctorId,
+      time,
       ...createAppointmentDto,
     });
   }
@@ -165,8 +168,10 @@ export class AppointmentController {
     @Body() updateAppointmentDto: UpdateAppointmentByDoctorDto,
     @Req() req: any,
   ) {
-    const { patientId, date, time } = updateAppointmentDto;
+    const { patientId, date } = updateAppointmentDto;
     const doctorId = req.user.id;
+    const appointmentDate = new Date(date);
+    const time = `${appointmentDate.getHours().toString().padStart(2, '0')}:${appointmentDate.getMinutes().toString().padStart(2, '0')}:${appointmentDate.getSeconds().toString().padStart(2, '0')}`;
 
     //? Validate if patientId exists
     if (patientId) {
@@ -181,7 +186,7 @@ export class AppointmentController {
     if (date) {
       const currentDateTime = new Date();
 
-      if (date < currentDateTime) {
+      if (appointmentDate.getTime() < currentDateTime.getTime()) {
         throw new BadRequestException(
           appointmentErrorMessages.APPOINTMENT_DATE_TIME_MUST_BE_IN_FUTURE,
         );
@@ -207,6 +212,7 @@ export class AppointmentController {
 
     return await this.appointmentService.updateAppointment(id, {
       doctorId,
+      time,
       ...updateAppointmentDto,
     });
   }

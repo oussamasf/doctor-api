@@ -8,6 +8,7 @@ import {
   Appointment,
   AppointmentDocument,
 } from '../schemas/appointment.schema';
+import { UpdateAppointmentDto } from '../dto';
 
 /**
  * Repository handling operations related to Appointment authentication.
@@ -73,7 +74,7 @@ export class AppointmentRepository {
    */
   async findOneAndUpdate(
     itemFilterQuery: FilterQuery<Appointment>,
-    updateQuery: UpdateQuery<Appointment>,
+    updateQuery: UpdateQuery<UpdateAppointmentDto>,
   ): Promise<Appointment> {
     return this.appointmentModel.findOneAndUpdate(
       itemFilterQuery,
@@ -90,11 +91,11 @@ export class AppointmentRepository {
    */
   async updateById(
     _id: string,
-    items: Partial<Appointment>,
+    updateQuery: UpdateQuery<UpdateAppointmentDto>,
   ): Promise<Appointment> {
     const updatedItem = await this.appointmentModel.findOneAndUpdate(
       { _id },
-      items,
+      updateQuery,
       { new: true },
     );
 

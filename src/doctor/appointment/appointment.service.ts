@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { AppointmentRepository } from './repository/appointment.repository';
 import {
   CreateAppointmentDto,
@@ -13,7 +17,10 @@ import { DoctorProfileRepository } from '../profile/repository/doctor.profile.re
 import { PatientProfileRepository } from 'src/patient/profile/repository/patient.profile.repository';
 import { addDays, getYYYYMMDD } from 'utils/time';
 import { Types } from 'mongoose';
-import { appointmentErrorMessages } from 'src/common/constants/errorMessages';
+import {
+  appointmentErrorMessages,
+  globalErrorMessages,
+} from 'src/common/constants/errorMessages';
 
 @Injectable()
 export class AppointmentService {
@@ -31,7 +38,24 @@ export class AppointmentService {
   async createAppointment(
     createAppointmentDto: CreateAppointmentDto,
   ): Promise<Appointment> {
-    return this.appointmentRepository.create(createAppointmentDto);
+    const item = (await this.appointmentRepository.create(
+      createAppointmentDto,
+    )) as Appointment & { _id: Types.ObjectId };
+
+    if (!item) {
+      throw new InternalServerErrorException(
+        globalErrorMessages.SOMETHING_WENT_WRONG,
+      );
+    }
+
+    await this.patientRepository.updateById(`${item.patientId}`, {
+      $push: {
+        appointments: item._id,
+        doctors: item.doctorId,
+      },
+    });
+
+    return item;
   }
 
   /**

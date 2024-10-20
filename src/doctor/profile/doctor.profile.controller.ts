@@ -77,7 +77,7 @@ export class DoctorProfileController {
    * @returns A Promise that resolves to updated authentication tokens.
    */
   @Version('1')
-  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_DOCTOR))
+  @UseGuards(AuthGuard(AUTH_GUARD.REFRESH_TOKEN_DOCTOR))
   @Get('/refresh')
   async refresh(@Req() req: any) {
     return await this.doctorProfileService.refresh(req.user);

@@ -22,7 +22,37 @@ export class PatientProfileRepository {
    * @returns A promise that resolves to the found patient.
    */
   async findOne(userFilterQuery: FilterQuery<Patient>): Promise<Patient> {
-    return this.patientModel.findOne(userFilterQuery);
+    const populateDoctor = {
+      path: 'doctorId',
+      select: 'lastName specialization',
+    };
+    const options = { sort: { date: -1 }, limit: 5 };
+
+    return this.patientModel
+      .findOne(userFilterQuery)
+      .populate({
+        path: 'doctors',
+        select: 'lastName specialization',
+        options,
+      })
+      .populate({
+        path: 'appointments',
+        select: 'date status doctorId',
+        options,
+        populate: populateDoctor,
+      })
+      .populate({
+        path: 'prescriptions',
+        select: 'medications startDate endDate doctorId ',
+        options,
+        populate: populateDoctor,
+      })
+      .populate({
+        path: 'medicalHistory',
+        select: 'diagnosis treatment date doctorId notes',
+        options,
+        populate: populateDoctor,
+      });
   }
 
   /**
@@ -63,7 +93,7 @@ export class PatientProfileRepository {
    */
   async findOneAndUpdate(
     userFilterQuery: FilterQuery<Patient>,
-    updateQuery: UpdateQuery<Patient>,
+    updateQuery: UpdateQuery<UpdatePatientDto>,
   ): Promise<Patient> {
     return this.patientModel.findOneAndUpdate(userFilterQuery, updateQuery, {
       new: true,
@@ -78,7 +108,7 @@ export class PatientProfileRepository {
    */
   async findByEmailAndUpdate(
     email: string,
-    updateQuery: UpdateQuery<Patient>,
+    updateQuery: UpdateQuery<UpdatePatientDto>,
   ): Promise<Patient> {
     return await this.patientModel.findOneAndUpdate({ email }, updateQuery, {
       new: true,
@@ -93,11 +123,11 @@ export class PatientProfileRepository {
    */
   async updateById(
     _id: string,
-    updateDoctorDto: UpdatePatientDto,
+    updateQuery: UpdateQuery<UpdatePatientDto>,
   ): Promise<Patient> {
     const updatedItem = await this.patientModel.findOneAndUpdate(
       { _id },
-      updateDoctorDto,
+      updateQuery,
       { new: true },
     );
 

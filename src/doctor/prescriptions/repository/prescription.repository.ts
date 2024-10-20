@@ -8,6 +8,7 @@ import {
   Prescription,
   PrescriptionDocument,
 } from '../schemas/prescription.schema';
+import { UpdateAppointmentDto } from 'src/doctor/appointment/dto';
 
 /**
  * Repository handling operations related to Prescription authentication.
@@ -90,11 +91,11 @@ export class PrescriptionRepository {
    */
   async updateById(
     _id: string,
-    items: Partial<Prescription>,
+    updateQuery: UpdateQuery<UpdateAppointmentDto>,
   ): Promise<Prescription> {
     const updatedItem = await this.prescriptionModel.findOneAndUpdate(
       { _id },
-      items,
+      updateQuery,
       { new: true },
     );
 

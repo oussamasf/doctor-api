@@ -8,6 +8,7 @@ import {
   MedicalHistory,
   MedicalHistoryDocument,
 } from '../schemas/medical-history.schema';
+import { UpdateMedicalHistoryDto } from '../dto';
 
 /**
  * Repository handling operations related to MedicalHistory
@@ -90,11 +91,11 @@ export class MedicalHistoryRepository {
    */
   async updateById(
     _id: string,
-    items: Partial<MedicalHistory>,
+    updateQuery: UpdateQuery<UpdateMedicalHistoryDto>,
   ): Promise<MedicalHistory> {
     const updatedItem = await this.medicalHistoryModel.findOneAndUpdate(
       { _id },
-      items,
+      updateQuery,
       { new: true },
     );
 

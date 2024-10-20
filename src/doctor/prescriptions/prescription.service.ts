@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrescriptionRepository } from './repository/prescription.repository';
 import {
   CreatePrescriptionDto,
@@ -16,7 +20,11 @@ import {
   Appointment,
   AppointmentStatus,
 } from '../appointment/schemas/appointment.schema';
-import { prescriptionErrorMessages } from 'src/common/constants/errorMessages';
+import {
+  globalErrorMessages,
+  prescriptionErrorMessages,
+} from 'src/common/constants/errorMessages';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class PrescriptionService {
@@ -35,7 +43,21 @@ export class PrescriptionService {
   async createPrescription(
     createPrescriptionDto: CreatePrescriptionDto,
   ): Promise<Prescription> {
-    return this.prescriptionRepository.create(createPrescriptionDto);
+    const item = (await this.prescriptionRepository.create(
+      createPrescriptionDto,
+    )) as Prescription & { _id: Types.ObjectId };
+
+    if (!item) {
+      throw new InternalServerErrorException(
+        globalErrorMessages.SOMETHING_WENT_WRONG,
+      );
+    }
+    await this.patientRepository.updateById(`${item.patientId}`, {
+      $push: {
+        prescriptions: item._id,
+      },
+    });
+    return item;
   }
 
   /**
@@ -183,6 +205,7 @@ export class PrescriptionService {
       0,
     );
 
+    //? only check for appointments in the next 24 hours
     const item = await this.appointmentRepository.exists({
       _id: appointmentId,
       doctorId: doctorId,
