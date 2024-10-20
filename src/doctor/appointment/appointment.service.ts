@@ -51,6 +51,7 @@ export class AppointmentService {
     await this.patientRepository.updateById(`${item.patientId}`, {
       $push: {
         appointments: item._id,
+        doctors: item.doctorId,
       },
     });
 

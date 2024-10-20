@@ -59,7 +59,7 @@ export class AppointmentController {
     @SortQuery() sort: SortQueryAppointmentDto,
     @Req() req: any,
   ) {
-    queryParams.query = { ...queryParams.query, patientId: req.user.id };
+    search = { ...search, patientId: req.user.id };
     return this.appointmentService.findAll(queryParams, search, sort);
   }
 

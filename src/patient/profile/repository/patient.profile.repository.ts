@@ -31,6 +31,11 @@ export class PatientProfileRepository {
     return this.patientModel
       .findOne(userFilterQuery)
       .populate({
+        path: 'doctors',
+        select: 'lastName specialization',
+        options,
+      })
+      .populate({
         path: 'appointments',
         select: 'date status doctorId',
         options,

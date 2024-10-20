@@ -60,7 +60,7 @@ export class MedicalHistoryController {
     @SortQuery() sort: SortQueryMedicalHistoryDto,
     @Req() req: any,
   ) {
-    queryParams.query = { ...queryParams.query, patientId: req.user.id };
+    search = { ...search, patientId: req.user.id };
     return this.medicalHistoryService.findAll(queryParams, search, sort);
   }
 
