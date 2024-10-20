@@ -63,7 +63,7 @@ export class PatientProfileRepository {
    */
   async findOneAndUpdate(
     userFilterQuery: FilterQuery<Patient>,
-    updateQuery: UpdateQuery<Patient>,
+    updateQuery: UpdateQuery<UpdatePatientDto>,
   ): Promise<Patient> {
     return this.patientModel.findOneAndUpdate(userFilterQuery, updateQuery, {
       new: true,
@@ -78,7 +78,7 @@ export class PatientProfileRepository {
    */
   async findByEmailAndUpdate(
     email: string,
-    updateQuery: UpdateQuery<Patient>,
+    updateQuery: UpdateQuery<UpdatePatientDto>,
   ): Promise<Patient> {
     return await this.patientModel.findOneAndUpdate({ email }, updateQuery, {
       new: true,
@@ -93,11 +93,11 @@ export class PatientProfileRepository {
    */
   async updateById(
     _id: string,
-    updateDoctorDto: UpdatePatientDto,
+    updateQuery: UpdateQuery<UpdatePatientDto>,
   ): Promise<Patient> {
     const updatedItem = await this.patientModel.findOneAndUpdate(
       { _id },
-      updateDoctorDto,
+      updateQuery,
       { new: true },
     );
 

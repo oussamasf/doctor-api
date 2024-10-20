@@ -40,14 +40,14 @@ export class Patient {
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId }] })
   doctors?: Types.ObjectId[];
 
-  @Prop({ type: [{ type: String }] })
-  appointments?: string[];
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId }] })
+  appointments?: Types.ObjectId[];
 
-  @Prop({ type: [{ type: String }] })
-  prescriptions?: string[];
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId }] })
+  prescriptions?: Types.ObjectId[];
 
-  @Prop({ type: [{ type: String }] })
-  medicalHistory?: string[];
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId }] })
+  medicalHistory?: Types.ObjectId[];
 
   @Prop()
   refreshToken?: string;

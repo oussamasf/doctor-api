@@ -93,11 +93,11 @@ export class DoctorProfileRepository {
    */
   async updateById(
     _id: string,
-    updateDoctorDto: UpdateDoctorDto,
+    updateQuery: UpdateQuery<UpdateDoctorDto>,
   ): Promise<Doctor> {
     const updatedItem = await this.doctorModel.findOneAndUpdate(
       { _id },
-      updateDoctorDto,
+      updateQuery,
       { new: true },
     );
 
