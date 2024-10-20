@@ -23,6 +23,7 @@ import { LoginDto } from './dto';
 // Constants
 import AUTH_GUARD from '../../common/constants/authGuards';
 import { LoginRes } from 'src/common/types';
+import { ResetPasswordDto } from 'src/common/dto/reset-password.dto';
 
 //? Controller class
 @Controller()
@@ -80,5 +81,26 @@ export class DoctorProfileController {
   @Get('/refresh')
   async refresh(@Req() req: any) {
     return await this.doctorProfileService.refresh(req.user);
+  }
+
+  /**
+   * Resets the password for the currently logged-in doctor.
+   * @param resetPasswordDto - A ResetPasswordDto object containing the new password and email.
+   * @param req - The HTTP request object.
+   * @returns A Promise that resolves to the updated doctor object.
+   */
+  @Version('1')
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_DOCTOR))
+  @Post('/reset-password')
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+    @Req() req: any,
+  ) {
+    const { password, email } = resetPasswordDto;
+    return await this.doctorProfileService.resetPassword(
+      email,
+      password,
+      req.user.id,
+    );
   }
 }

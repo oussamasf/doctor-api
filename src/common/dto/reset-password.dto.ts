@@ -1,27 +1,15 @@
 import {
-  IsString,
-  MinLength,
   IsEmail,
-  IsEnum,
   IsNotEmpty,
+  IsString,
   Matches,
+  MinLength,
 } from 'class-validator';
-import { ADMINISTRATIVE_ROLES } from '../account/constants/roles';
+import { globalErrorMessages } from '../constants/errorMessages';
 import { ApiProperty } from '@nestjs/swagger';
-import { MatchPasswords } from 'src/common/decorators/matchPassword.decorator';
-import { globalErrorMessages } from 'src/common/constants/errorMessages';
+import { MatchPasswords } from '../decorators/matchPassword.decorator';
 
-export class CreateAdministrativeDto {
-  @IsString()
-  @MinLength(2)
-  username: string;
-
-  @IsEnum(ADMINISTRATIVE_ROLES, {
-    message: 'Role must be one of: admin, staff',
-    each: true,
-  })
-  roles: ADMINISTRATIVE_ROLES[];
-
+export class ResetPasswordDto {
   @IsString()
   @MinLength(8)
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, {

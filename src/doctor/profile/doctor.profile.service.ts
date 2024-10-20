@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-
+import { Types } from 'mongoose';
 // DB actor
 import { DoctorProfileRepository } from './repository/doctor.profile.repository';
 
@@ -253,5 +257,61 @@ export class DoctorProfileService {
    */
   async delete(_id: string): Promise<Doctor> {
     return await this.doctorProfileRepository.deleteById(_id);
+  }
+
+  /**
+   * Resets the password for a doctor by updating the password hash in the database.
+   *
+   * @param email - The email of the doctor for whom the password is being reset.
+   * @param password - The new password for the doctor.
+   * @param userId - The unique identifier of the doctor requesting the password reset.
+   * @returns A promise that resolves to the updated doctor object with the new password.
+   */
+  async resetPassword(
+    email: string,
+    password: string,
+    userId: string,
+  ): Promise<Doctor> {
+    const staff = (await this.doctorProfileRepository.findOne({
+      email,
+    })) as Doctor & {
+      _id: Types.ObjectId;
+    };
+    if (!staff || staff._id.toString() !== userId)
+      throw new NotFoundException(
+        globalErrorMessages.YOU_ARE_NOT_AUTHORIZED_TO_PERFORM_THIS_ACTION,
+      );
+
+    const isUsedPassword = await this._isPasswordReused(
+      password,
+      staff.password,
+    );
+
+    if (isUsedPassword) {
+      throw new BadRequestException(
+        globalErrorMessages.PASSWORD_HAS_BEEN_USED_RECENTLY,
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      password,
+      parseInt(`${this.configService.get('CRYPTO_SALT_ROUNDS')}`),
+    );
+
+    return await this.doctorProfileRepository.findOneAndUpdate(
+      { email },
+      { password: hashedPassword },
+    );
+  }
+
+  /**
+   * Check if the password has been used recently
+   */
+  private async _isPasswordReused(
+    newPassword: string,
+    oldPassword: string,
+  ): Promise<boolean> {
+    if (await bcrypt.compare(newPassword, oldPassword)) return true;
+    return false;
   }
 }
