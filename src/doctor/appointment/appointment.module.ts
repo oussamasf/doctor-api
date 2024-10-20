@@ -13,14 +13,14 @@ import { AppointmentRepository } from './repository/appointment.repository';
 
 // Schema
 import { Appointment, AppointmentSchema } from './schemas/appointment.schema';
-import { PatientProfileModule } from 'src/patient/profile/patient.profile.module';
-import { DoctorProfileModule } from '../profile/doctor.profile.module';
+// import { PatientProfileModule } from 'src/patient/profile/patient.profile.module';
+// import { DoctorProfileModule } from '../profile/doctor.profile.module';
 
 @Module({
   imports: [
     ConfigModule,
-    PatientProfileModule,
-    DoctorProfileModule,
+    // PatientProfileModule,
+    // DoctorProfileModule,
     MongooseModule.forFeature([
       { name: Appointment.name, schema: AppointmentSchema },
     ]),
