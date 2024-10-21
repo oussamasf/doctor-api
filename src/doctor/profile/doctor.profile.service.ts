@@ -218,6 +218,10 @@ export class DoctorProfileService {
    * @returns {Promise<MovieInformation>} A Promise that resolves to the created doctor information.
    */
   async create(createDoctorDto: CreateDoctorDto): Promise<Doctor> {
+    await this.commonService.findWithConflictException(
+      () => this.getUserByName(createDoctorDto.username),
+      doctorErrorMessages.DOCTOR_ALREADY_EXISTS,
+    );
     return await this.doctorProfileRepository.create(createDoctorDto);
   }
 

@@ -18,6 +18,7 @@ export const globalErrorMessages = {
 
 export const doctorErrorMessages = {
   DOCTOR_NOT_FOUND: 'DOCTOR_NOT_FOUND',
+  DOCTOR_ALREADY_EXISTS: 'DOCTOR_ALREADY_EXISTS',
 };
 
 export const patientErrorMessages = {
