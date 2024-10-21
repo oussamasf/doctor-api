@@ -15,7 +15,7 @@ export class RemovePasswordFieldInterceptor implements NestInterceptor {
         if (typeof data === 'object' && data !== null) {
           data.password = undefined;
           data.refreshToken = undefined;
-          if (data?.results.length > 0) {
+          if (data?.results?.length > 0) {
             data.results.forEach((result: any) => {
               result.password = undefined;
               result.refreshToken = undefined;
