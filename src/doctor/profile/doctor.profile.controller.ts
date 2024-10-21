@@ -14,7 +14,7 @@ import { ApiTags, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { DoctorProfileService } from './doctor.profile.service';
 
 // Schemas
-import { Doctor } from './schemas/Doctor.schema';
+import { Doctor } from './schemas/doctor.schema';
 import { loginSchema } from './constants/swagger';
 
 // DTOS

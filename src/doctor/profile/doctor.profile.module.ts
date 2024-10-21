@@ -14,7 +14,7 @@ import { DoctorProfileService } from './doctor.profile.service';
 import { DoctorProfileRepository } from './repository/doctor.profile.repository';
 
 // Schema
-import { Doctor, DoctorSchema } from './schemas/Doctor.schema';
+import { Doctor, DoctorSchema } from './schemas/doctor.schema';
 import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
 
 @Module({
