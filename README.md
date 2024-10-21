@@ -147,3 +147,11 @@ The API handles errors gracefully, returning appropriate HTTP status codes and e
 - **Duplicate Medical History**: Cannot create a medical history if a record already exists for the same `prescriptionId`.
 - **Patient Not Found**: Cannot create a medical history if the provided `patientId` does not exist.
 - **Prescription Not Found**: Cannot create a medical history if the provided `prescriptionId` does not exist or doesn't belong to the requesting doctor.
+
+## Usage
+
+The usage of the CLinic API is thoroughly documented in Postman and Swagger.
+
+Swagger: http://host:port/api
+
+[Postman Workspace](https://www.postman.com/red-flare-724255/workspace/doctor-api)
