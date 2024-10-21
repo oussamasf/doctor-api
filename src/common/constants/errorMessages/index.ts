@@ -23,6 +23,7 @@ export const doctorErrorMessages = {
 
 export const patientErrorMessages = {
   PATIENT_NOT_FOUND: 'PATIENT_NOT_FOUND',
+  PATIENT_ALREADY_EXISTS: 'PATIENT_ALREADY_EXISTS',
 };
 
 export const appointmentErrorMessages = {

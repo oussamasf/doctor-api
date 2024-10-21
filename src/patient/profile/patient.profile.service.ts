@@ -53,6 +53,21 @@ export class PatientProfileService {
   ) {}
 
   /**
+   * Creates a new patient information entry based on the provided DTO.
+   *
+   * @param {CreateMovieDto} createMovieDto - The DTO containing  information for creation.
+   * @throws {ConflictException} If an patient with the same name already exists.
+   * @returns {Promise<MovieInformation>} A Promise that resolves to the created patient information.
+   */
+  async create(createPatientDto: CreatePatientDto): Promise<Patient> {
+    await this.commonService.findWithConflictException(
+      () => this.getUserByName(createPatientDto.username),
+      patientErrorMessages.PATIENT_ALREADY_EXISTS,
+    );
+    return await this.patientProfileRepository.create(createPatientDto);
+  }
+
+  /**
    * Find a patient by ID.
    *
    * @param {string} _id - The ID of the patient to find.
@@ -208,17 +223,6 @@ export class PatientProfileService {
     const findQuery = { limit, skip, search, sort };
 
     return await this.patientProfileRepository.find(findQuery);
-  }
-
-  /**
-   * Creates a new patient information entry based on the provided DTO.
-   *
-   * @param {CreateMovieDto} createMovieDto - The DTO containing  information for creation.
-   * @throws {ConflictException} If an patient with the same name already exists.
-   * @returns {Promise<MovieInformation>} A Promise that resolves to the created patient information.
-   */
-  async create(createPatientDto: CreatePatientDto): Promise<Patient> {
-    return await this.patientProfileRepository.create(createPatientDto);
   }
 
   /**
