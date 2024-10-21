@@ -80,7 +80,7 @@ export class MedicalHistoryController {
       );
     }
 
-    //? Validate Patient and Doctor existence
+    //? Validate Patient
     const patientExists = await this.medicalHistoryService.doesPatientExist(
       `${patientId}`,
     );

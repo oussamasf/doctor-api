@@ -129,3 +129,21 @@ The API handles errors gracefully, returning appropriate HTTP status codes and e
 - **404 Not Found**: Returned when a requested resource (doctor, patient, appointment, etc.) does not exist.
 - **400 Bad Request**: Returned when validation fails for any DTO.
 - **500 Internal Server Error**: Returned for unexpected server issues.
+
+## Appointment Restrictions:
+
+- **Patient Not Found**: The appointment cannot be created if the provided `patientId` does not exist in the database.
+- **Past Appointment Date**: The appointment cannot be created if the specified date is in the past.
+- **Conflicting Appointment**: The appointment cannot be created if the patient or doctor already has an appointment scheduled at the same time.
+
+## Prescription Restrictions:
+
+- **Patient Not Found**: The prescription cannot be created if the provided `patientId` does not exist.
+- **Appointment Not Found**: The prescription cannot be created if the specified `appointmentId` does not exist or doesn't belong to the requesting doctor.
+- **Appointment Not Today**: The prescription cannot be created if the associated appointment is not scheduled for today.
+
+## Medical History Restrictions:
+
+- **Duplicate Medical History**: Cannot create a medical history if a record already exists for the same `prescriptionId`.
+- **Patient Not Found**: Cannot create a medical history if the provided `patientId` does not exist.
+- **Prescription Not Found**: Cannot create a medical history if the provided `prescriptionId` does not exist or doesn't belong to the requesting doctor.

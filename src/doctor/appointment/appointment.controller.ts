@@ -171,7 +171,7 @@ export class AppointmentController {
     const { patientId, date } = updateAppointmentDto;
     const doctorId = req.user.id;
     const appointmentDate = new Date(date);
-    let time;
+    let time: string;
     //? Validate if patientId exists
     if (patientId) {
       const patientExists = await this.appointmentService.doesPatientExist(
