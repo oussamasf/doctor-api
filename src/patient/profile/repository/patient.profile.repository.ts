@@ -21,7 +21,9 @@ export class PatientProfileRepository {
    * @param userFilterQuery The filter query to search for a patient.
    * @returns A promise that resolves to the found patient.
    */
-  async findOne(userFilterQuery: FilterQuery<Patient>): Promise<Patient> {
+  async findOneAndPopulate(
+    userFilterQuery: FilterQuery<Patient>,
+  ): Promise<Patient> {
     const populateDoctor = {
       path: 'doctorId',
       select: 'lastName specialization',
@@ -53,6 +55,10 @@ export class PatientProfileRepository {
         options,
         populate: populateDoctor,
       });
+  }
+
+  async findOne(userFilterQuery: FilterQuery<Patient>): Promise<Patient> {
+    return this.patientModel.findOne(userFilterQuery);
   }
 
   /**

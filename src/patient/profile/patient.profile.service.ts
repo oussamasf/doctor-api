@@ -73,10 +73,12 @@ export class PatientProfileService {
    * @param {string} _id - The ID of the patient to find.
    * @returns {Promise<Patient>} A promise that resolves to the found patient.
    */
-  findOne(
-    _id: string, //:  Promise<User>
-  ) {
+  findOne(_id: string): Promise<Patient> {
     return this.patientProfileRepository.findOne({ _id });
+  }
+
+  fetchPatientInfo(_id: string): Promise<Patient> {
+    return this.patientProfileRepository.findOneAndPopulate({ _id });
   }
 
   /**
@@ -234,7 +236,7 @@ export class PatientProfileService {
    */
   async findOneWithException(_id: string): Promise<Patient | void> {
     return await this.commonService.findWithNotFoundException(
-      () => this.findOne(_id),
+      () => this.fetchPatientInfo(_id),
       patientErrorMessages.PATIENT_NOT_FOUND,
     );
   }

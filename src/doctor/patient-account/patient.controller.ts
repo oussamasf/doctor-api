@@ -66,6 +66,6 @@ export class PatientRegistryController {
   @Version('1')
   @Get(':id')
   async findPatient(@Param() { id }: IdParamsDto) {
-    return await this.patientService.findOne(`${id}`);
+    return await this.patientService.findOneWithException(id);
   }
 }

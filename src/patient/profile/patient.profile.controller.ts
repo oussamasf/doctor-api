@@ -61,6 +61,18 @@ export class PatientAuthController {
   }
 
   /**
+   * Retrieves the profile information for the currently logged-in patient.
+   * @param req - The HTTP request object containing the logged-in user's ID.
+   * @returns A Promise that resolves to a Patient object representing the profile information of the logged-in patient.
+   */
+  @Version('1')
+  @UseGuards(AuthGuard(AUTH_GUARD.ACCESS_TOKEN_PATIENT))
+  @Get('/information')
+  async getInformation(@Req() req: any): Promise<Patient> {
+    return await this.patientProfileService.fetchPatientInfo(req.user.id);
+  }
+
+  /**
    * Patient logout endpoint.
    * @param req - The HTTP request object.
    */
