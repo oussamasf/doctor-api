@@ -10,7 +10,7 @@ body:
   - type: checkboxes
     id: required-tasks
     attributes:
-      label: "foo"
+      label: "# What needs to be done"
       options:
         - label: Update the README file
         - label: Update swagger API documentation
@@ -19,7 +19,7 @@ body:
   - type: textarea
     id: additional-tasks
     attributes:
-      label: "foo"
+      label: "additional tasks"
       description: Add additional tasks if needed
       placeholder: "- [ ] Additional task"
 
@@ -30,7 +30,7 @@ body:
   - type: textarea
     id: optional-tasks
     attributes:
-      label: "foo"
+      label: "# What is optional to be done"
       placeholder: List optional tasks here
 
   - type: markdown
@@ -40,5 +40,5 @@ body:
   - type: textarea
     id: constraints
     attributes:
-      label: "foo"
+      label: "constraints"
       placeholder: List constraints here
